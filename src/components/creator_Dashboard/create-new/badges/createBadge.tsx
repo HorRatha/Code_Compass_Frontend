@@ -1,9 +1,61 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, ChangeEvent, FormEvent} from "react"
+import Image from "next/image"
 import { useCreateBadgeMutation } from "@/lib/services/creator-dashboard/badge/createBadgeApi"
 
-const Input = ({ className = "", type = "text", ...props }) => (
+// Define proper interfaces
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  className?: string
+}
+
+interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  className?: string
+}
+
+interface LabelProps {
+  children: React.ReactNode
+  htmlFor?: string
+  className?: string
+}
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode
+  className?: string
+  variant?: "default" | "outline" | "ghost" | "danger"
+  size?: "default" | "sm" | "lg"
+}
+
+interface AlertProps {
+  children: React.ReactNode
+  variant?: "default" | "success" | "error" | "warning"
+  className?: string
+}
+
+interface NotificationProps {
+  message: string
+  onClose: () => void
+}
+
+interface FormData {
+  name: string
+  description: string
+  icon_url: string
+}
+
+interface NotificationState {
+  type: 'success' | 'error'
+  message: string
+}
+
+interface ApiError {
+  data?: {
+    message?: string
+  }
+  message?: string
+}
+
+const Input = ({ className = "", type = "text", ...props }: InputProps) => (
   <input
     type={type}
     className={`flex h-12 w-full rounded-xl border border-input bg-card/50 backdrop-blur-sm px-4 py-3 text-sm text-foreground ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-300 hover:border-primary/50 hover:shadow-md ${className}`}
@@ -11,14 +63,14 @@ const Input = ({ className = "", type = "text", ...props }) => (
   />
 )
 
-const Textarea = ({ className = "", ...props }) => (
+const Textarea = ({ className = "", ...props }: TextareaProps) => (
   <textarea
     className={`flex min-h-[120px] w-full rounded-xl border border-input bg-card/50 backdrop-blur-sm px-4 py-3 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-300 hover:border-primary/50 hover:shadow-md resize-none ${className}`}
     {...props}
   />
 )
 
-const Label = ({ children, htmlFor, className = "" }) => (
+const Label = ({ children, htmlFor, className = "" }: LabelProps) => (
   <label
     htmlFor={htmlFor}
     className={`text-sm font-semibold text-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`}
@@ -36,15 +88,12 @@ const Button = ({
   type = "button",
   disabled = false,
   ...props
-}) => {
-  const baseClasses =
-  
-    "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background transform active:scale-95"
+}: ButtonProps) => {
+  const baseClasses = "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background transform active:scale-95"
 
   const variants = {
     default: "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl hover:scale-105",
-    outline:
-      "border-2 border-input hover:border-primary hover:bg-primary/10 backdrop-blur-sm hover:text-primary text-foreground",
+    outline: "border-2 border-input hover:border-primary hover:bg-primary/10 backdrop-blur-sm hover:text-primary text-foreground",
     ghost: "hover:bg-accent hover:text-accent-foreground",
     danger: "bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-lg",
   }
@@ -68,7 +117,7 @@ const Button = ({
   )
 }
 
-const Alert = ({ children, variant = "default", className = "" }) => {
+const Alert = ({ children, variant = "default", className = "" }: AlertProps) => {
   const variants = {
     default: "bg-primary/10 border-primary/20 text-primary",
     success: "bg-chart-3/10 border-chart-3/20 text-chart-3",
@@ -77,12 +126,14 @@ const Alert = ({ children, variant = "default", className = "" }) => {
   }
 
   return (
-    <div className={`border rounded-xl p-4 text-sm backdrop-blur-sm ${variants[variant]} ${className}`}>{children}</div>
+    <div className={`border rounded-xl p-4 text-sm backdrop-blur-sm ${variants[variant]} ${className}`}>
+      {children}
+    </div>
   )
 }
 
 // Success notification component
-const SuccessNotification = ({ message, onClose }) => (
+const SuccessNotification = ({ message, onClose }: NotificationProps) => (
   <Alert variant="success" className="mb-6">
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-2">
@@ -112,7 +163,7 @@ const SuccessNotification = ({ message, onClose }) => (
 )
 
 // Error notification component
-const ErrorNotification = ({ message, onClose }) => (
+const ErrorNotification = ({ message, onClose }: NotificationProps) => (
   <Alert variant="error" className="mb-6">
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-2">
@@ -142,16 +193,17 @@ const ErrorNotification = ({ message, onClose }) => (
 )
 
 function CreateBadgeForm() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     description: "",
     icon_url: "",
   })
 
-  const [iconFile, setIconFile] = useState(null)
-  const [iconPreview, setIconPreview] = useState("")
-  const [uploadMethod, setUploadMethod] = useState("upload") // "upload" or "url"
-  const [notification, setNotification] = useState(null)
+  const [iconFile, setIconFile] = useState<File | null>(null)
+  const [iconPreview, setIconPreview] = useState<string>("")
+  const [uploadMethod, setUploadMethod] = useState<"upload" | "url">("upload")
+  const [notification, setNotification] = useState<NotificationState | null>(null)
+  const [imageError, setImageError] = useState(false)
 
   // Use the mutation hook
   const [createBadge, { isLoading }] = useCreateBadgeMutation()
@@ -166,7 +218,7 @@ function CreateBadgeForm() {
     }
   }, [notification])
 
-  const handleIconUpload = (e) => {
+  const handleIconUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       // Validate file type
@@ -192,16 +244,16 @@ function CreateBadgeForm() {
       // Create preview
       const reader = new FileReader()
       reader.onload = (e) => {
-        setIconPreview(e.target?.result || "")
+        setIconPreview(e.target?.result as string || "")
       }
       reader.readAsDataURL(file)
     }
   }
 
-  const convertToBase64 = (file) => {
+  const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
-      reader.onload = () => resolve(reader.result)
+      reader.onload = () => resolve(reader.result as string)
       reader.onerror = reject
       reader.readAsDataURL(file)
     })
@@ -215,13 +267,14 @@ function CreateBadgeForm() {
     })
     setIconFile(null)
     setIconPreview("")
+    setImageError(false)
 
     // Reset file input
-    const fileInput = document.getElementById("iconFile")
+    const fileInput = document.getElementById("iconFile") as HTMLInputElement
     if (fileInput) fileInput.value = ""
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
     try {
@@ -284,8 +337,9 @@ function CreateBadgeForm() {
     } catch (err) {
       console.error("Failed to create badge:", err)
       
+      const error = err as ApiError
       // Show error notification
-      const errorMessage = err?.data?.message || err?.message || "Failed to create badge. Please try again."
+      const errorMessage = error?.data?.message || error?.message || "Failed to create badge. Please try again."
       setNotification({
         type: 'error',
         message: errorMessage
@@ -293,17 +347,26 @@ function CreateBadgeForm() {
     }
   }
 
-  const handleUploadMethodChange = (method) => {
+  const handleUploadMethodChange = (method: "upload" | "url") => {
     setUploadMethod(method)
+    setImageError(false)
     // Clear the other method's data
     if (method === "upload") {
       setFormData({ ...formData, icon_url: "" })
     } else {
       setIconFile(null)
       setIconPreview("")
-      const fileInput = document.getElementById("iconFile")
+      const fileInput = document.getElementById("iconFile") as HTMLInputElement
       if (fileInput) fileInput.value = ""
     }
+  }
+
+  const handleImageError = () => {
+    setImageError(true)
+  }
+
+  const handleImageLoad = () => {
+    setImageError(false)
   }
 
   return (
@@ -363,14 +426,14 @@ function CreateBadgeForm() {
           <div className="space-y-6">
             {/* Icon Upload Method Toggle */}
             <div className="space-y-4">
-              <Label>Icon Method *</Label>
+              <Label htmlFor="uploadMethod">Icon Method *</Label>
               <div className="flex space-x-4">
                 <label className="flex items-center space-x-3 cursor-pointer">
                   <input
                     type="radio"
                     value="upload"
                     checked={uploadMethod === "upload"}
-                    onChange={(e) => handleUploadMethodChange(e.target.value)}
+                    onChange={(e) => handleUploadMethodChange(e.target.value as "upload" | "url")}
                     className="w-4 h-4 text-primary focus:ring-primary focus:ring-2"
                   />
                   <span className="text-sm font-medium">Upload File</span>
@@ -380,7 +443,7 @@ function CreateBadgeForm() {
                     type="radio"
                     value="url"
                     checked={uploadMethod === "url"}
-                    onChange={(e) => handleUploadMethodChange(e.target.value)}
+                    onChange={(e) => handleUploadMethodChange(e.target.value as "upload" | "url")}
                     className="w-4 h-4 text-primary focus:ring-primary focus:ring-2"
                   />
                   <span className="text-sm font-medium">Enter URL</span>
@@ -402,13 +465,17 @@ function CreateBadgeForm() {
                 <p className="text-xs text-muted-foreground">Accepted formats: JPG, PNG, GIF, SVG (Max 5MB)</p>
                 {iconPreview && (
                   <div className="bg-muted/30 rounded-xl p-4 border border-border">
-                    <Label className="block mb-3 font-semibold">Preview</Label>
+                    <Label htmlFor="preview" className="block mb-3 font-semibold">Preview</Label>
                     <div className="flex items-center space-x-4">
-                      <img
-                        src={iconPreview || "/placeholder.svg"}
-                        alt="Badge icon preview"
-                        className="w-20 h-20 object-cover rounded-xl border-2 border-border shadow-lg"
-                      />
+                      <div className="relative w-20 h-20">
+                        <Image
+                          src={iconPreview}
+                          alt="Badge icon preview"
+                          width={80}
+                          height={80}
+                          className="w-20 h-20 object-cover rounded-xl border-2 border-border shadow-lg"
+                        />
+                      </div>
                       <div className="text-sm text-muted-foreground">
                         <p className="font-medium text-foreground">{iconFile?.name}</p>
                         <p>Size: {iconFile ? (iconFile.size / 1024).toFixed(1) + " KB" : ""}</p>
@@ -429,18 +496,24 @@ function CreateBadgeForm() {
                 />
                 {formData.icon_url && (
                   <div className="bg-muted/30 rounded-xl p-4 border border-border">
-                    <Label className="block mb-3 font-semibold">Preview</Label>
-                    <img
-                      src={formData.icon_url || "/placeholder.svg"}
-                      alt="Badge icon preview"
-                      className="w-20 h-20 object-cover rounded-xl border-2 border-border shadow-lg"
-                      onError={(e) => {
-                        e.target.style.display = "none"
-                      }}
-                      onLoad={(e) => {
-                        e.target.style.display = "block"
-                      }}
-                    />
+                    <Label htmlFor="urlPreview" className="block mb-3 font-semibold">Preview</Label>
+                    <div className="relative w-20 h-20">
+                      {!imageError ? (
+                        <Image
+                          src={formData.icon_url}
+                          alt="Badge icon preview"
+                          width={80}
+                          height={80}
+                          className="w-20 h-20 object-cover rounded-xl border-2 border-border shadow-lg"
+                          onError={handleImageError}
+                          onLoad={handleImageLoad}
+                        />
+                      ) : (
+                        <div className="w-20 h-20 flex items-center justify-center rounded-xl border-2 border-border shadow-lg bg-muted text-muted-foreground">
+                          <span className="text-xs text-center px-2">Invalid URL</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

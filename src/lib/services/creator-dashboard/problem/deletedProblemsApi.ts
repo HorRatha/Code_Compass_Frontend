@@ -91,20 +91,20 @@ export interface DeleteProblemResponse {
 }
 
 // Define types for transform functions
-interface ResponseMeta {
-  response?: {
-    status?: number;
-  };
-}
+// interface ResponseMeta {
+//   response?: {
+//     status?: number;
+//   };
+// }
 
-interface TransformArgs {
-  problemId: number;
-}
+// interface TransformArgs {
+//   problemId: number;
+// }
 
-interface ErrorResponse {
-  status?: number;
-  data?: unknown;
-}
+// interface ErrorResponse {
+//   status?: number;
+//   data?: unknown;
+// }
 
 interface QueryError {
   data?: unknown;
@@ -124,29 +124,29 @@ export const deletedProblemsApi = baseApi.injectEndpoints({
           method: 'DELETE',
         }
       },
-      transformResponse: (response: DeleteProblemResponse | null, meta: ResponseMeta, arg: TransformArgs) => {
-        console.log('=== DELETE API RESPONSE ===')
-        console.log('Raw response:', response)
-        console.log('Meta:', meta)
-        console.log('Status:', meta?.response?.status)
-        console.log('Args:', arg)
+      // transformResponse: (response: DeleteProblemResponse | null, meta: ResponseMeta, arg: TransformArgs) => {
+      //   console.log('=== DELETE API RESPONSE ===')
+      //   console.log('Raw response:', response)
+      //   console.log('Meta:', meta)
+      //   console.log('Status:', meta?.response?.status)
+      //   console.log('Args:', arg)
         
-        // Handle different response formats
-        if (response === null || response === undefined) {
-          return { success: true, message: 'Deleted successfully' }
-        }
+      //   // Handle different response formats
+      //   if (response === null || response === undefined) {
+      //     return { success: true, message: 'Deleted successfully' }
+      //   }
         
-        return response
-      },
-      transformErrorResponse: (response: ErrorResponse, meta: ResponseMeta, arg: TransformArgs) => {
-        console.log('=== DELETE API ERROR ===')
-        console.log('Error response:', response)
-        console.log('Meta:', meta)
-        console.log('Status:', meta?.response?.status)
-        console.log('Args:', arg)
+      //   return response
+      // },
+      // transformErrorResponse: (response: ErrorResponse, meta: ResponseMeta, arg: TransformArgs) => {
+      //   console.log('=== DELETE API ERROR ===')
+      //   console.log('Error response:', response)
+      //   console.log('Meta:', meta)
+      //   console.log('Status:', meta?.response?.status)
+      //   console.log('Args:', arg)
         
-        return response
-      },
+      //   return response
+      // },
       invalidatesTags: (result, error, { problemId }) => {
         console.log('=== DELETE API CACHE INVALIDATION ===')
         console.log('Result:', result)

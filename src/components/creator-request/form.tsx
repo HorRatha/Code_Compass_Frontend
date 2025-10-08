@@ -1,67 +1,6 @@
-// 'use client'
-
-// import { useState } from 'react';
-// import { usePostCreatorRequestMutation } from '@/lib/services/creator-request/creatorApi';
-
-// const FormCreatorRequest = () => {
-//   // State to manage the textarea value
-//   const [description, setDescription] = useState<string>('');
-
-//   // Use the mutation hook correctly
-//   const [postCreatorRequest, { data, isLoading, error }] = usePostCreatorRequestMutation();
-
-//   // Handle form submission
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault(); // Prevent default form submission
-//     if (!description.trim()) {
-//       alert('Description is required');
-//       return;
-//     }
-
-//     try {
-//       await postCreatorRequest({ description }).unwrap();
-//       alert('Creator request submitted successfully!');
-//       setDescription(''); // Reset the textarea after successful submission
-//     } catch (err) {
-//       console.error('Failed to submit creator request:', err);
-//       alert('Failed to submit creator request');
-//     }
-//   };
-
-//   return (
-//     <form onSubmit={handleSubmit}>
-//       <div>
-//         <textarea
-//           name="description"
-//           id="description"
-//           value={description}
-//           onChange={(e) => setDescription(e.target.value)}
-//           placeholder="Enter your description"
-//           className="w-full p-2 border rounded"
-//           rows={5}
-//         />
-//         <button
-//           type="submit"
-//           disabled={isLoading}
-//           className="mt-2 px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-//         >
-//           {isLoading ? 'Submitting...' : 'Submit'}
-//         </button>
-//       </div>
-//       {error && <p className="text-red-500 mt-2">Error: {JSON.stringify(error)}</p>}
-//       {data && <p className="text-green-500 mt-2">Success: {data.status}</p>}
-//     </form>
-//   );
-// };
-
-// export default FormCreatorRequest;
-
-
-
-
 'use client'
 
-import { useState, useRef, useEffect, ReactNode, RefObject } from 'react';
+import { useState, useRef, useEffect, ReactNode } from 'react';
 import { usePostCreatorRequestMutation } from '@/lib/services/creator-request/creatorApi';
 import { ChevronUp, Loader } from 'lucide-react';
 import { AnimatePresence, motion } from "framer-motion";
@@ -206,24 +145,28 @@ function PopoverFormButton({
   )
 }
 
+// Fixed useClickOutside hook - properly handles null values
 const useClickOutside = (
-  ref: RefObject<HTMLElement>,
-  handleOnClickOutside: (event: MouseEvent | TouchEvent) => void
+  ref: React.RefObject<HTMLElement | null>,
+  handler: (event: MouseEvent | TouchEvent) => void
 ) => {
   useEffect(() => {
     const listener = (event: MouseEvent | TouchEvent) => {
-      if (!ref.current || ref.current.contains(event.target as Node)) {
-        return
+      const el = ref?.current;
+      if (!el || el.contains(event.target as Node)) {
+        return;
       }
-      handleOnClickOutside(event)
-    }
-    document.addEventListener("mousedown", listener)
-    document.addEventListener("touchstart", listener)
+      handler(event);
+    };
+
+    document.addEventListener('mousedown', listener);
+    document.addEventListener('touchstart', listener);
+
     return () => {
-      document.removeEventListener("mousedown", listener)
-      document.removeEventListener("touchstart", listener)
-    }
-  }, [ref, handleOnClickOutside])
+      document.removeEventListener('mousedown', listener);
+      document.removeEventListener('touchstart', listener);
+    };
+  }, [ref, handler]);
 }
 
 function PopoverFormSuccess({

@@ -686,7 +686,19 @@ import { useGetMyProblemsQuery, Problem } from "@/lib/services/creator-dashboard
 import { useModifyProblemMutation } from "@/lib/services/creator-dashboard/problem/modifyProblemsApi"
 import { useDeleteProblemMutation } from "@/lib/services/creator-dashboard/problem/deletedProblemsApi"
 
-const Badge = ({ children, className = "" }) => (
+interface ProblemsTableProps {
+  showVerified?: boolean;
+  showAll?: boolean;
+  onEdit?: (problem: Problem) => void;
+  onDelete?: (problem: Problem) => void;
+}
+
+interface NotificationState {
+  type: string;
+  message: string;
+}
+
+const Badge = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <span
     className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200 ${className}`}
   >
@@ -703,6 +715,14 @@ const Button = ({
   type = "button",
   disabled = false,
   ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+  variant?: "default" | "outline" | "ghost" | "destructive";
+  size?: "default" | "sm" | "lg";
+  onClick?: () => void;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
 }) => {
   const baseClasses =
     "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background transform active:scale-95 relative overflow-hidden"
@@ -734,23 +754,23 @@ const Button = ({
   )
 }
 
-const Table = ({ children, className = "" }) => (
+const Table = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <div className="w-full overflow-auto rounded-xl border border-border">
     <table className={`w-full caption-bottom text-sm ${className}`}>{children}</table>
   </div>
 )
 
-const TableHeader = ({ children }) => (
+const TableHeader = ({ children }: { children: React.ReactNode }) => (
   <thead className="bg-muted/50 [&_tr]:border-b [&_tr]:border-border">{children}</thead>
 )
 
-const TableBody = ({ children }) => <tbody className="[&_tr:last-child]:border-0">{children}</tbody>
+const TableBody = ({ children }: { children: React.ReactNode }) => <tbody className="[&_tr:last-child]:border-0">{children}</tbody>
 
-const TableRow = ({ children, className = "" }) => (
+const TableRow = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <tr className={`border-b border-border transition-colors hover:bg-muted/30 ${className}`}>{children}</tr>
 )
 
-const TableHead = ({ children, className = "" }) => (
+const TableHead = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <th
     className={`h-14 px-6 text-left align-middle font-semibold text-muted-foreground [&:has([role=checkbox])]:pr-0 ${className}`}
   >
@@ -758,12 +778,12 @@ const TableHead = ({ children, className = "" }) => (
   </th>
 )
 
-const TableCell = ({ children, className = "" }) => (
-  <td className={`p-6 align-middle [&:has([role=checkbox])]:pr-0 ${className}`}>{children}</td>
+const TableCell = ({ children, className = "", colSpan }: { children: React.ReactNode; className?: string; colSpan?: number }) => (
+  <td className={`p-6 align-middle [&:has([role=checkbox])]:pr-0 ${className}`} colSpan={colSpan}>{children}</td>
 )
 
 // Notification Component
-const Notification = ({ type, message, onClose }) => {
+const Notification = ({ type, message, onClose }: { type: string; message: string; onClose: () => void }) => {
   const icons = {
     success: <CheckCircle className="w-5 h-5" />,
     error: <XCircle className="w-5 h-5" />,
@@ -782,8 +802,8 @@ const Notification = ({ type, message, onClose }) => {
   }, [onClose])
 
   return (
-    <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg transition-all duration-300 ${colors[type]}`}>
-      {icons[type]}
+    <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg transition-all duration-300 ${colors[type as keyof typeof colors]}`}>
+      {icons[type as keyof typeof icons]}
       <span className="font-medium">{message}</span>
       <button onClick={onClose} className="ml-2 hover:opacity-70">
         ×
@@ -792,7 +812,7 @@ const Notification = ({ type, message, onClose }) => {
   )
 }
 
-function getDifficultyColor(difficulty) {
+function getDifficultyColor(difficulty: string | undefined): string {
   switch (difficulty?.toLowerCase()) {
     case "easy":
       return "bg-gradient-to-r from-green-500 to-emerald-600 text-white border-green-500"
@@ -805,7 +825,7 @@ function getDifficultyColor(difficulty) {
   }
 }
 
-function getStatusColor(status) {
+function getStatusColor(status: string | undefined): string {
   switch (status) {
     case "APPROVED":
       return "bg-gradient-to-r from-green-500 to-emerald-600 text-white border-green-500"
@@ -818,20 +838,13 @@ function getStatusColor(status) {
   }
 }
 
-interface ProblemsTableProps {
-  showVerified?: boolean;
-  showAll?: boolean;
-  onEdit?: (problem: Problem) => void;
-  onDelete?: (problem: Problem) => void;
-}
-
 export default function ProblemsTable({ 
   showVerified = true, 
   showAll = false,
   onEdit, 
   onDelete 
 }: ProblemsTableProps) {
-  const [notification, setNotification] = React.useState<{type: string, message: string} | null>(null)
+  const [notification, setNotification] = React.useState<NotificationState | null>(null)
   const [currentPage, setCurrentPage] = React.useState(1)
   const itemsPerPage = 5
   
@@ -887,19 +900,16 @@ export default function ProblemsTable({
     const maxVisiblePages = 5
 
     if (totalPages <= maxVisiblePages) {
-      // Show all pages if total is small
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i)
       }
     } else {
-      // Always show first page
       pages.push(1)
 
       if (currentPage > 3) {
         pages.push('...')
       }
 
-      // Show pages around current page
       const startPage = Math.max(2, currentPage - 1)
       const endPage = Math.min(totalPages - 1, currentPage + 1)
 
@@ -911,7 +921,6 @@ export default function ProblemsTable({
         pages.push('...')
       }
 
-      // Always show last page
       pages.push(totalPages)
     }
 
@@ -966,20 +975,8 @@ export default function ProblemsTable({
     )
   }
 
-  // Handle API response notifications
-  useEffect(() => {
-    if (error) {
-      setNotification({
-        type: 'error',
-        message: 'Failed to fetch problems. Please try again.'
-      })
-    } else if (allProblems && allProblems.length > 0) {
-      setNotification({
-        type: 'success',
-        message: `Successfully loaded ${allProblems.length} problem${allProblems.length > 1 ? 's' : ''}`
-      })
-    }
-  }, [allProblems, error])
+  // Handle API response notifications - removed to prevent infinite loop
+  // Notifications are now handled manually via handleRefresh and other actions
 
   const showNotification = (type: string, message: string) => {
     setNotification({ type, message })
@@ -1004,7 +1001,6 @@ export default function ProblemsTable({
       if (onEdit) {
         await onEdit(problem)
         showNotification('info', `Opening editor for: ${problem.title} (ID: ${problem.id})`)
-        // Don't refetch here - let the actual edit save handle it
       } else {
         showNotification('info', 'Edit functionality - please implement onEdit prop')
       }
@@ -1030,7 +1026,6 @@ export default function ProblemsTable({
       
       showNotification('info', `Attempting to delete "${problem.title}"...`)
       
-      // Try the delete operation
       const deletePromise = deleteProblem({ problemId: problem.id })
       console.log('Delete promise created:', deletePromise)
       
@@ -1041,34 +1036,29 @@ export default function ProblemsTable({
       
       showNotification('success', `Problem "${problem.title}" deleted successfully!`)
       
-      // Refresh the data
       refetch()
       
-      // Call onDelete callback if provided
       if (onDelete) {
         onDelete(problem)
       }
       
-    } catch (error) {
+    } catch (error: unknown) {
       console.log('=== DELETE ERROR DETAILS ===')
       console.log('Raw error:', error)
       console.log('Error type:', typeof error)
-      console.log('Error constructor:', error?.constructor?.name)
-      console.log('Error keys:', Object.keys(error || {}))
       
-      // Handle different error types
       let errorMessage = 'Failed to delete problem'
       
       if (typeof error === 'string') {
         errorMessage = error
-      } else if (error?.status) {
-        errorMessage = `Delete failed with status ${error.status}`
-        if (error?.data?.message) {
-          errorMessage += `: ${error.data.message}`
+      } else if ((error as { status?: number })?.status) {
+        errorMessage = `Delete failed with status ${(error as { status: number }).status}`
+        if ((error as { data?: { message?: string } })?.data?.message) {
+          errorMessage += `: ${(error as { data: { message: string } }).data.message}`
         }
-      } else if (error?.message) {
-        errorMessage = `Delete failed: ${error.message}`
-      } else if (error && Object.keys(error).length === 0) {
+      } else if ((error as { message?: string })?.message) {
+        errorMessage = `Delete failed: ${(error as { message: string }).message}`
+      } else if (error && Object.keys(error as object).length === 0) {
         errorMessage = 'Delete API call failed - empty error response. Check network tab for details.'
       }
       
@@ -1077,7 +1067,6 @@ export default function ProblemsTable({
     }
   }
 
-  // Debug logging
   console.log('ProblemsTable render:', {
     showVerified,
     totalProblems: allProblems?.length,
@@ -1106,18 +1095,18 @@ export default function ProblemsTable({
   }
 
   if (error) {
-    const getErrorMessage = (err) => {
+    const getErrorMessage = (err: unknown): string => {
       if (typeof err === 'string') return err
-      if (err?.message) return err.message
-      if (err?.data?.message) return err.data.message
-      if (err?.error) return err.error
-      if (err?.status) return `HTTP ${err.status} Error`
+      if ((err as { message?: string })?.message) return (err as { message: string }).message
+      if ((err as { data?: { message?: string } })?.data?.message) return (err as { data: { message: string } }).data.message
+      if ((err as { error?: string })?.error) return (err as { error: string }).error
+      if ((err as { status?: number })?.status) return `HTTP ${(err as { status: number }).status} Error`
       return 'Unknown error occurred'
     }
     
     const errorMessage = getErrorMessage(error)
     
-    if (error?.status === 401) {
+    if ((error as { status?: number })?.status === 401) {
       return (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
@@ -1140,10 +1129,10 @@ export default function ProblemsTable({
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell colSpan="6" className="text-center py-8">
+                  <TableCell colSpan={6} className="text-center py-8">
                     <div className="flex flex-col items-center space-y-4">
                       <div className="text-red-500 dark:text-red-400 text-lg font-semibold">
-                        🔒 Authentication Required
+                        Authentication Required
                       </div>
                       <div className="text-gray-600 dark:text-gray-400">
                         Your session has expired. Please log in again to view your problems.
@@ -1195,7 +1184,7 @@ export default function ProblemsTable({
             </TableHeader>
             <TableBody>
               <TableRow>
-                <TableCell colSpan="6" className="text-center py-8 text-red-500 dark:text-red-400">
+                <TableCell colSpan={6} className="text-center py-8 text-red-500 dark:text-red-400">
                   Error loading problems: {errorMessage}
                 </TableCell>
               </TableRow>
@@ -1306,7 +1295,6 @@ export default function ProblemsTable({
                         variant="ghost"
                         className="hover:bg-accent hover:text-accent-foreground transition-all duration-200 group-hover:scale-105 p-2"
                         onClick={() => handleEdit(problem)}
-                        title="Edit problem"
                         disabled={modifyState.isLoading}
                       >
                         <Edit className="w-4 h-4" />
@@ -1316,7 +1304,6 @@ export default function ProblemsTable({
                         variant="destructive"
                         className="hover:bg-destructive hover:text-destructive-foreground transition-all duration-200 group-hover:scale-105 p-2"
                         onClick={() => handleDelete(problem)}
-                        title="Delete problem"
                         disabled={deleteState.isLoading}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -1327,7 +1314,7 @@ export default function ProblemsTable({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan="6" className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <TableCell colSpan={6} className="text-center py-8 text-gray-500 dark:text-gray-400">
                   No {showAll ? 'problems' : showVerified ? 'problems' : 'pending problems'} found
                 </TableCell>
               </TableRow>

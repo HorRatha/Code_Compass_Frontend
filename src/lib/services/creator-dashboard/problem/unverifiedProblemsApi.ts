@@ -60,7 +60,7 @@ export const unverifiedProblemsApi = baseApi.injectEndpoints({
         url: `problems/unverified`,
         method: 'GET',
       }),
-      providesTags: ['UnverifiedProblems'], // Use a unique tag too
+      providesTags: ['Problems'], // Use a unique tag too
       // Add error handling and logging
       transformErrorResponse: (response: ErrorResponse) => {
         console.error('Unverified problems API error:', response);

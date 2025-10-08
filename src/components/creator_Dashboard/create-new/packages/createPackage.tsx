@@ -1,9 +1,13 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect, ChangeEvent, FormEvent, ReactNode } from "react"
 import { useCreatePackageMutation } from "@/lib/services/creator-dashboard/package/createPackageApi"
 
-const Input = ({ className = "", type = "text", ...props }) => (
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  className?: string
+}
+
+const Input = ({ className = "", type = "text", ...props }: InputProps) => (
   <input
     type={type}
     className={`flex h-12 w-full rounded-xl border border-input bg-card/50 backdrop-blur-sm px-4 py-3 text-sm text-foreground ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-300 hover:border-primary/50 hover:shadow-md ${className}`}
@@ -11,14 +15,24 @@ const Input = ({ className = "", type = "text", ...props }) => (
   />
 )
 
-const Textarea = ({ className = "", ...props }) => (
+interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  className?: string
+}
+
+const Textarea = ({ className = "", ...props }: TextareaProps) => (
   <textarea
     className={`flex min-h-[120px] w-full rounded-xl border border-input bg-card/50 backdrop-blur-sm px-4 py-3 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-300 hover:border-primary/50 hover:shadow-md resize-none ${className}`}
     {...props}
   />
 )
 
-const Label = ({ children, htmlFor, className = "" }) => (
+interface LabelProps {
+  children: ReactNode
+  htmlFor?: string
+  className?: string
+}
+
+const Label = ({ children, htmlFor, className = "" }: LabelProps) => (
   <label
     htmlFor={htmlFor}
     className={`text-sm font-semibold text-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`}
@@ -26,6 +40,13 @@ const Label = ({ children, htmlFor, className = "" }) => (
     {children}
   </label>
 )
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode
+  className?: string
+  variant?: "default" | "outline" | "ghost"
+  size?: "default" | "sm"
+}
 
 const Button = ({
   children,
@@ -36,7 +57,7 @@ const Button = ({
   type = "button",
   disabled = false,
   ...props
-}) => {
+}: ButtonProps) => {
   const baseClasses =
     "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background transform active:scale-95"
 
@@ -65,95 +86,144 @@ const Button = ({
   )
 }
 
-const Select = ({ children, value, onValueChange }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [selectedValue, setSelectedValue] = useState(value || "")
+// Select Components
+interface SelectProps {
+  children: ReactNode
+  value?: string
+  onValueChange?: (value: string) => void
+}
 
-  const handleValueChange = (newValue) => {
+interface SelectContextProps {
+  selectedValue: string
+  onValueChange: (value: string) => void
+  isOpen: boolean
+  setIsOpen: (open: boolean) => void
+}
+
+const SelectContext = React.createContext<SelectContextProps | undefined>(undefined)
+
+const Select = ({ children, value = "", onValueChange }: SelectProps) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const [selectedValue, setSelectedValue] = useState(value)
+
+  const handleValueChange = (newValue: string) => {
     setSelectedValue(newValue)
     onValueChange?.(newValue)
     setIsOpen(false)
   }
 
+  const contextValue: SelectContextProps = {
+    selectedValue,
+    onValueChange: handleValueChange,
+    isOpen,
+    setIsOpen,
+  }
+
   return (
-    <div className="relative">
-      {React.Children.map(children, (child) => {
-        if (React.isValidElement(child)) {
-          if (child.type === SelectTrigger) {
-            return React.cloneElement(child, {
-              onClick: () => setIsOpen(!isOpen),
-              selectedValue,
-              isOpen,
-            })
-          } else if (child.type === SelectContent) {
-            return isOpen
-              ? React.cloneElement(child, {
-                  onValueChange: handleValueChange,
-                  onClose: () => setIsOpen(false),
-                })
-              : null
-          }
-        }
-        return child
-      })}
+    <SelectContext.Provider value={contextValue}>
+      <div className="relative">
+        {children}
+      </div>
+    </SelectContext.Provider>
+  )
+}
+
+interface SelectTriggerProps {
+  children?: ReactNode
+}
+
+const SelectTrigger = ({ }: SelectTriggerProps) => {
+  const context = React.useContext(SelectContext)
+  if (!context) {
+    throw new Error("SelectTrigger must be used within a Select component")
+  }
+
+  const { selectedValue, isOpen, setIsOpen } = context
+
+  return (
+    <button
+      type="button"
+      className="flex h-12 w-full items-center justify-between rounded-xl border border-input bg-card/50 backdrop-blur-sm px-4 py-3 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-300 hover:border-primary/50 hover:shadow-md"
+      onClick={() => setIsOpen(!isOpen)}
+    >
+      <span className={selectedValue ? "text-foreground" : "text-muted-foreground"}>
+        {selectedValue || "Select difficulty level..."}
+      </span>
+      <svg
+        className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+  )
+}
+
+interface SelectValueProps {
+  children?: ReactNode
+  placeholder?: string
+}
+
+const SelectValue = ({ children, placeholder }: SelectValueProps) => (
+  <span className="text-muted-foreground">{children || placeholder}</span>
+)
+
+interface SelectContentProps {
+  children: ReactNode
+}
+
+const SelectContent = ({ children }: SelectContentProps) => {
+  const context = React.useContext(SelectContext)
+  if (!context) {
+    throw new Error("SelectContent must be used within a Select component")
+  }
+
+  const { isOpen } = context
+
+  if (!isOpen) return null
+
+  return (
+    <div className="absolute top-full left-0 right-0 z-50 mt-2 rounded-xl border border-border bg-popover/95 backdrop-blur-md shadow-2xl animate-in">
+      <div className="p-2">
+        {children}
+      </div>
     </div>
   )
 }
 
-const SelectTrigger = ({ onClick, selectedValue, isOpen }) => (
-  <button
-    type="button"
-    className="flex h-12 w-full items-center justify-between rounded-xl border border-input bg-card/50 backdrop-blur-sm px-4 py-3 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-300 hover:border-primary/50 hover:shadow-md"
-    onClick={onClick}
-  >
-    <span className={selectedValue ? "text-foreground" : "text-muted-foreground"}>
-      {selectedValue || "Select difficulty level..."}
-    </span>
-    <svg
-      className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
+interface SelectItemProps {
+  value: string
+  children: ReactNode
+}
+
+const SelectItem = ({ value, children }: SelectItemProps) => {
+  const context = React.useContext(SelectContext)
+  if (!context) {
+    throw new Error("SelectItem must be used within a Select component")
+  }
+
+  const { onValueChange } = context
+
+  return (
+    <div
+      className="relative flex cursor-pointer select-none items-center rounded-lg px-3 py-2.5 text-sm text-foreground outline-none hover:bg-primary/20 hover:text-primary transition-colors duration-200"
+      onClick={() => onValueChange(value)}
     >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-    </svg>
-  </button>
-)
-
-const SelectValue = ({ children, placeholder }) => (
-  <span className="text-muted-foreground">{children || placeholder}</span>
-)
-
-const SelectContent = ({ children, onValueChange, onClose }) => (
-  <div className="absolute top-full left-0 right-0 z-50 mt-2 rounded-xl border border-border bg-popover/95 backdrop-blur-md shadow-2xl animate-in">
-    <div className="p-2">
-      {React.Children.map(children, (child) => {
-        if (React.isValidElement(child)) {
-          return React.cloneElement(child, {
-            onValueChange,
-            onClose,
-          })
-        }
-        return child
-      })}
+      {children}
     </div>
-  </div>
-)
+  )
+}
 
-const SelectItem = ({ value, children, onValueChange, onClose }) => (
-  <div
-    className="relative flex cursor-pointer select-none items-center rounded-lg px-3 py-2.5 text-sm text-foreground outline-none hover:bg-primary/20 hover:text-primary transition-colors duration-200"
-    onClick={() => {
-      onValueChange?.(value)
-      onClose?.()
-    }}
-  >
-    {children}
-  </div>
-)
+// Notification Components
+interface NotificationProps {
+  message: string
+  onClose: () => void
+}
 
 // Success notification component
-const SuccessNotification = ({ message, onClose }) => (
+const SuccessNotification = ({ message, onClose }: NotificationProps) => (
   <div className="mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-green-600 text-sm backdrop-blur-sm">
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-2">
@@ -183,7 +253,7 @@ const SuccessNotification = ({ message, onClose }) => (
 )
 
 // Error notification component
-const ErrorNotification = ({ message, onClose }) => (
+const ErrorNotification = ({ message, onClose }: NotificationProps) => (
   <div className="mb-6 p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm backdrop-blur-sm">
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-2">
@@ -212,8 +282,37 @@ const ErrorNotification = ({ message, onClose }) => (
   </div>
 )
 
-function CreatePackageForm({ onSuccess }) {
-  const [formData, setFormData] = useState({
+interface FormData {
+  name: string
+  description: string
+  problems: string
+  badges: string
+  difficulty: string
+}
+
+interface NotificationState {
+  type: 'success' | 'error'
+  message: string
+}
+
+interface ApiError {
+  data?: {
+    message?: string
+  }
+  message?: string
+}
+
+interface PackageResult {
+  name: string
+  status: string
+}
+
+interface CreatePackageFormProps {
+  onSuccess?: (result: PackageResult) => void
+}
+
+function CreatePackageForm({ onSuccess }: CreatePackageFormProps) {
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     description: "",
     problems: "",
@@ -221,12 +320,12 @@ function CreatePackageForm({ onSuccess }) {
     difficulty: "",
   })
 
-  const [notification, setNotification] = useState(null)
+  const [notification, setNotification] = useState<NotificationState | null>(null)
 
   const [createPackage, { isLoading }] = useCreatePackageMutation()
 
   // Auto-hide notification after 5 seconds
-  React.useEffect(() => {
+  useEffect(() => {
     if (notification) {
       const timer = setTimeout(() => {
         setNotification(null)
@@ -235,7 +334,7 @@ function CreatePackageForm({ onSuccess }) {
     }
   }, [notification])
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
     if (!formData.name.trim() || !formData.description.trim()) {
@@ -270,17 +369,32 @@ function CreatePackageForm({ onSuccess }) {
       })
 
       // Call success callback if provided
-      onSuccess?.(result)
+      if (onSuccess) {
+        onSuccess(result)
+      }
     } catch (err) {
       console.error("Failed to create package:", err)
       
+      const error = err as ApiError
       // Show error notification
-      const errorMessage = err?.data?.message || err?.message || "Failed to create package. Please try again."
+      const errorMessage = error?.data?.message || error?.message || "Failed to create package. Please try again."
       setNotification({
         type: 'error',
         message: errorMessage
       })
     }
+  }
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [id.replace('package', '').toLowerCase()]: value
+    }))
+  }
+
+  const handleDifficultyChange = (value: string) => {
+    setFormData(prev => ({ ...prev, difficulty: value }))
   }
 
   return (
@@ -312,7 +426,7 @@ function CreatePackageForm({ onSuccess }) {
             <Input
               id="packageName"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={handleInputChange}
               placeholder="Enter a descriptive package name"
               required
             />
@@ -323,7 +437,7 @@ function CreatePackageForm({ onSuccess }) {
             <Textarea
               id="packageDescription"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={handleInputChange}
               placeholder="Describe what this package covers, its objectives, and target audience"
               required
               rows={4}
@@ -336,7 +450,7 @@ function CreatePackageForm({ onSuccess }) {
               <Textarea
                 id="packageBadges"
                 value={formData.badges}
-                onChange={(e) => setFormData({ ...formData, badges: e.target.value })}
+                onChange={handleInputChange}
                 placeholder="List any badges or achievements that can be earned from this package"
                 className="min-h-[100px]"
                 rows={3}
@@ -345,7 +459,7 @@ function CreatePackageForm({ onSuccess }) {
 
             <div className="space-y-3">
               <Label htmlFor="packageDifficulty">Difficulty Level (Optional)</Label>
-              <Select onValueChange={(value) => setFormData({ ...formData, difficulty: value })}>
+              <Select value={formData.difficulty} onValueChange={handleDifficultyChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select difficulty level" />
                 </SelectTrigger>

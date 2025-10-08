@@ -4,8 +4,10 @@ import React from 'react';
 import HeroSection from "@/components/homePage/hero_section/hero-section";
 import { HeroScrollDemo } from "@/components/ui/hero-scroll-demo";
 import CodeCompassFeatures from "@/components/homePage/home_feature/CodeCompassFeatures";
-import CodeCompassOrbiting from "@/components/homePage/hero_section/CodeCompassOrbiting";
+// import CodeCompassOrbiting from "@/components/homePage/hero_section/CodeCompassOrbiting";
 import WhyChooseSection from "@/components/homePage/WhyChooseSection";
+import ChooseLanguage from '@/components/homePage/ChooseLanguage';
+import Questions from '@/components/homePage/question';
 
 const Homepage = () => {
   return (
@@ -28,8 +30,11 @@ const Homepage = () => {
         <HeroScrollDemo />
         {/* <LogoMarquee/> */}
         <CodeCompassFeatures />
-        <CodeCompassOrbiting />
+        <ChooseLanguage/>
+        {/* <CodeCompassOrbiting /> */}
         <WhyChooseSection />
+        <Questions/>
+
       </div>
     </div>
   );

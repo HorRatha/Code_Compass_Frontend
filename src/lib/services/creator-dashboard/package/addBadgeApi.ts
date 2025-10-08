@@ -167,22 +167,22 @@ interface AddBadgeResponse {
 }
 
 // Define types for transform functions
-interface ErrorResponse {
-  status?: number;
-  data?: unknown;
-  message?: string;
-}
+// interface ErrorResponse {
+//   status?: number;
+//   data?: unknown;
+//   message?: string;
+// }
 
-interface ResponseMeta {
-  response?: {
-    status?: number;
-  };
-}
+// interface ResponseMeta {
+//   response?: {
+//     status?: number;
+//   };
+// }
 
-interface TransformArgs {
-  packageName: string;
-  badgeName: string;
-}
+// interface TransformArgs {
+//   packageName: string;
+//   badgeName: string;
+// }
 
 export const addBadgeApi = baseApi.injectEndpoints({
   overrideExisting: true,
@@ -293,22 +293,22 @@ export const addBadgeApi = baseApi.injectEndpoints({
           message: 'Badge added successfully' 
         };
       },
-      transformErrorResponse: (response: ErrorResponse, meta: ResponseMeta, arg: TransformArgs) => {
-        console.log('=== TRANSFORM ERROR ===');
-        console.log('Response:', response);
-        console.log('Response type:', typeof response);
-        console.log('Meta:', meta);
-        console.log('Meta response:', meta?.response);
-        console.log('Status:', meta?.response?.status);
-        console.log('Arg:', arg);
-        console.log('======================');
+      // transformErrorResponse: (response: ErrorResponse, meta: ResponseMeta, arg: TransformArgs) => {
+      //   console.log('=== TRANSFORM ERROR ===');
+      //   console.log('Response:', response);
+      //   console.log('Response type:', typeof response);
+      //   console.log('Meta:', meta);
+      //   console.log('Meta response:', meta?.response);
+      //   console.log('Status:', meta?.response?.status);
+      //   console.log('Arg:', arg);
+      //   console.log('======================');
         
-        return {
-          status: meta?.response?.status || 'UNKNOWN',
-          data: response,
-          message: typeof response === 'string' ? response : response?.message || 'Unknown error'
-        };
-      },
+      //   return {
+      //     status: meta?.response?.status || 'UNKNOWN',
+      //     data: response,
+      //     message: typeof response === 'string' ? response : response?.message || 'Unknown error'
+      //   };
+      // },
       invalidatesTags: (result, error, { packageName }) => {
         console.log('=== INVALIDATE TAGS ===');
         console.log('Result:', result);

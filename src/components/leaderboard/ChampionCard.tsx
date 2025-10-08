@@ -1,166 +1,175 @@
 import React from 'react';
-import { Trophy, Code, Flame, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
+import { Crown, Zap, Star, TrendingUp } from 'lucide-react';
 
-interface ProgrammingLanguage {
+interface ChampionUser {
+  rank: number;
   name: string;
+  title: string;
+  stars: number;
   problems: number;
-  color: string;
+  country: string;
+  image: string;
+  quote: string;
+  joinedDate?: string;
+  location?: string;
+  streak?: number;
+  lastActive?: string;
 }
 
-interface SidebarProfileProps {
+interface ChampionCardProps {
+  user: ChampionUser;
   isDarkMode: boolean;
-  userName: string;
-  userTitle: string;
-  userAvatar: string;
-  programmingLanguages: ProgrammingLanguage[];
-  isDesktopVisible: boolean;
-  onToggleDesktop: () => void;
 }
 
-const SidebarProfile: React.FC<SidebarProfileProps> = ({
-  isDarkMode,
-  userName,
-  userTitle,
-  userAvatar,
-  programmingLanguages,
-  isDesktopVisible,
-  onToggleDesktop
-}) => {
+const ChampionCard: React.FC<ChampionCardProps> = ({ user, isDarkMode }) => {
   return (
-    <>
-      {/* Desktop Toggle Button - Fixed position when sidebar is hidden */}
-      {!isDesktopVisible && (
-        <button
-          onClick={onToggleDesktop}
-          className={`hidden lg:block fixed top-6 left-6 z-50 p-3 rounded-full shadow-lg border transition-all duration-300 ${
-            isDarkMode 
-              ? 'bg-slate-900/95 border-white/20 text-white hover:bg-slate-800/95 shadow-black/20' 
-              : 'bg-white/95 border-black/20 text-gray-900 hover:bg-gray-50/95 shadow-black/10'
-          } backdrop-blur-sm`}
-        >
-          <ChevronRight className="w-5 h-5" />
-        </button>
-      )}
+    <div className="mb-6 sm:mb-8 lg:mb-10">
+      <div
+        className={`relative p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border-2 cursor-pointer group overflow-hidden transition-all duration-500 ${
+          isDarkMode
+            ? 'bg-gradient-to-br from-slate-800/60 via-slate-900/40 to-black/40 border-[#CCF301]/30 hover:border-[#CCF301]/60 shadow-xl shadow-black/20'
+            : 'bg-gradient-to-br from-white/90 via-gray-50/80 to-white/70 border-[#CCF301]/40 hover:border-[#CCF301]/70 shadow-2xl shadow-gray-300/50'
+        } backdrop-blur-xl hover:shadow-[0_0_40px_rgba(204,243,1,0.3)] hover:scale-[1.01]`}
+      >
+        {/* Animated Background Effects */}
+        <div className={`absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
+          isDarkMode 
+            ? 'from-[#CCF301]/5 via-transparent to-[#CCF301]/5'
+            : 'from-[#CCF301]/10 via-transparent to-[#CCF301]/10'
+        }`}></div>
+        <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-[#CCF301]/10 rounded-full blur-3xl group-hover:blur-2xl transition-all duration-500"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 sm:w-32 sm:h-32 bg-[#CCF301]/5 rounded-full blur-3xl group-hover:blur-2xl transition-all duration-500"></div>
 
-      {/* Sidebar Container - Desktop Only (completely hidden on mobile) */}
-      {isDesktopVisible && (
-        <div className={`
-          hidden lg:block
-          h-auto
-          w-80 lg:w-80 xl:w-96
-          border-r overflow-hidden
-          ${isDarkMode 
-            ? 'border-white/10 bg-gradient-to-b from-slate-900/98 to-black/98' 
-            : 'border-black/10 bg-gradient-to-b from-white/98 to-gray-50/98'
-          } backdrop-blur-xl
-        `}>
-          
-          {/* Desktop Close Button - Only visible when sidebar is open */}
-          <button
-            onClick={onToggleDesktop}
-            className={`absolute top-4 right-4 z-10 p-2 rounded-lg border transition-all duration-300 hover:scale-105 ${
-              isDarkMode 
-                ? 'bg-white/5 border-white/10 text-white hover:bg-white/10' 
-                : 'bg-black/5 border-black/10 text-gray-900 hover:bg-black/10'
-            }`}
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-
-          <div className="p-4 sm:p-6 lg:p-8 h-full overflow-y-auto">
-            {/* Profile Section */}
-            <div className="mb-6 sm:mb-8">
-              <div className="flex items-center gap-4 sm:gap-5 mb-4 sm:mb-6">
-                <div className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl overflow-hidden border-2 sm:border-3 transition-all duration-300 flex-shrink-0 ${
-                  isDarkMode 
-                    ? 'border-[#CCF301]/30 shadow-lg shadow-[#CCF301]/10' 
-                    : 'border-[#CCF301]/50 shadow-lg shadow-[#CCF301]/20'
-                }`}>
-                  <div className="w-full h-full bg-gradient-to-br from-[#CCF301] to-[#CCF301]/70 flex items-center justify-center text-black font-bold text-xl sm:text-2xl">
-                    {userAvatar}
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                </div>
-                
-                <div className="min-w-0 flex-1">
-                  <h2 className={`text-xl sm:text-2xl font-bold transition-colors duration-300 truncate ${
-                    isDarkMode ? 'text-white' : 'text-gray-900'
-                  }`}>
-                    {userName}
-                  </h2>
-                  <p className={`text-sm transition-colors duration-300 ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    {userTitle}
-                  </p>
-                </div>
-              </div>
-
-              {/* Achievement Badges */}
-              <div className="grid grid-cols-1 gap-3 mb-6 sm:mb-8">
-                <div className={`flex items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all duration-300 hover:scale-105 ${
-                  isDarkMode 
-                    ? 'bg-gradient-to-r from-yellow-500/10 to-yellow-600/10 border-yellow-500/20 text-yellow-400' 
-                    : 'bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border-yellow-500/30 text-yellow-700'
-                }`}>
-                  <Trophy className="w-5 h-5 flex-shrink-0" />
-                  <span className="font-semibold text-sm">Top 10 Coders</span>
-                </div>
-                
-                <div className={`flex items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all duration-300 hover:scale-105 ${
-                  isDarkMode 
-                    ? 'bg-gradient-to-r from-blue-500/10 to-blue-600/10 border-blue-500/20 text-blue-400' 
-                    : 'bg-gradient-to-r from-blue-500/20 to-blue-600/20 border-blue-500/30 text-blue-700'
-                }`}>
-                  <Star className="w-5 h-5 flex-shrink-0" />
-                  <span className="font-semibold text-sm">Top 50 Holders</span>
-                </div>
-                
-                <div className={`flex items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all duration-300 hover:scale-105 ${
-                  isDarkMode 
-                    ? 'bg-gradient-to-r from-red-500/10 to-red-600/10 border-red-500/20 text-red-400' 
-                    : 'bg-gradient-to-r from-red-500/20 to-red-600/20 border-red-500/30 text-red-700'
-                }`}>
-                  <Flame className="w-5 h-5 flex-shrink-0" />
-                  <span className="font-semibold text-sm">Top 100 Active</span>
-                </div>
-              </div>
+        <div className="relative flex flex-col lg:flex-row items-center gap-4 sm:gap-6">
+          {/* Champion Avatar */}
+          <div className="relative flex-shrink-0">
+            <div
+              className={`w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden border-4 transition-all duration-500 ${
+                isDarkMode
+                  ? 'border-[#CCF301]/40 shadow-[0_0_30px_rgba(204,243,1,0.3)]'
+                  : 'border-[#CCF301]/60 shadow-[0_0_30px_rgba(204,243,1,0.4)]'
+              } group-hover:border-[#CCF301] group-hover:shadow-[0_0_40px_rgba(204,243,1,0.5)] group-hover:scale-110`}
+            >
+              <Image
+                src={user.image}
+                alt={user.name}
+                fill
+                sizes="(max-width: 640px) 80px, (max-width: 1024px) 96px, 112px"
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                priority
+              />
             </div>
 
-            {/* Programming Languages */}
-            <div className="mb-6 sm:mb-8">
-              <h3 className={`text-lg sm:text-xl font-bold mb-4 sm:mb-6 flex items-center gap-2 ${
+            {/* Rank Badge */}
+            <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl shadow-lg transform group-hover:scale-110 transition-all duration-300">
+              <Crown className="w-3 h-3 sm:w-4 sm:h-4 animate-pulse" />
+              #{user.rank}
+            </div>
+
+            {/* Floating Animation Ring */}
+            <div className="absolute inset-0 rounded-full border-2 border-[#CCF301]/30 animate-ping opacity-20"></div>
+          </div>
+
+          {/* Champion Info */}
+          <div className="flex-1 text-center lg:text-left space-y-3 sm:space-y-4">
+            {/* Title Section */}
+            <div className="flex items-center justify-center lg:justify-start gap-2 flex-wrap">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-[#CCF301]/20 to-[#CCF301]/10 border border-[#CCF301]/30">
+                <Star className="w-4 h-4 text-[#CCF301] animate-pulse" />
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-black text-[#CCF301] tracking-wide">
+                  Champion
+                </h2>
+              </div>
+              <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 animate-bounce" />
+            </div>
+
+            {/* Name & Title */}
+            <div>
+              <h3 className={`text-xl sm:text-2xl lg:text-3xl font-bold mb-1 transition-colors duration-300 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>
-                <Code className="w-5 h-5 text-[#CCF301]" />
-                Programming Languages
+                {user.name}
               </h3>
-              
-              <div className="space-y-3 sm:space-y-4">
-                {programmingLanguages.map((lang) => (
-                  <div key={lang.name} className={`flex justify-between items-center p-3 sm:p-4 rounded-lg sm:rounded-xl border transition-all duration-300 hover:scale-105 ${
-                    isDarkMode 
-                      ? 'bg-white/5 border-white/10 hover:bg-white/10' 
-                      : 'bg-black/5 border-black/10 hover:bg-black/10'
-                  }`}>
-                    <span className={`font-medium text-sm sm:text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {lang.name}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className={`font-bold text-sm sm:text-base ${lang.color}`}>{lang.problems}</span>
-                      <span className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>
-                        problems
-                      </span>
-                    </div>
-                  </div>
-                ))}
+              <p className={`text-sm sm:text-base lg:text-lg font-medium transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+              }`}>
+                {user.title}
+              </p>
+            </div>
+
+            {/* Quote */}
+            <p
+              className={`text-xs sm:text-sm lg:text-base italic leading-relaxed max-w-3xl transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}
+            >
+              &ldquo;{user.quote}&rdquo;
+            </p>
+
+            {/* Stats Grid */}
+            <div className="flex flex-wrap justify-center lg:justify-start gap-2 sm:gap-3">
+              <div
+                className={`group/stat flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border transition-all duration-300 hover:scale-105 ${
+                  isDarkMode
+                    ? 'bg-slate-800/90 border-slate-600/50 hover:border-[#CCF301]/50 hover:bg-slate-800'
+                    : 'bg-white/90 border-gray-300/50 hover:border-[#CCF301]/50 hover:bg-white'
+                } backdrop-blur-sm shadow-lg`}
+              >
+                <Star className={`w-4 h-4 ${isDarkMode ? 'text-[#CCF301]' : 'text-[#CCF301]'} group-hover/stat:animate-spin`} />
+                <div>
+                  <span className="font-bold text-[#CCF301] text-base sm:text-lg">
+                    {user.stars.toLocaleString()}
+                  </span>
+                  <span className={`ml-1.5 text-xs sm:text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    stars
+                  </span>
+                </div>
               </div>
+
+              <div
+                className={`group/stat flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border transition-all duration-300 hover:scale-105 ${
+                  isDarkMode
+                    ? 'bg-slate-800/90 border-slate-600/50 hover:border-[#CCF301]/50 hover:bg-slate-800'
+                    : 'bg-white/90 border-gray-300/50 hover:border-[#CCF301]/50 hover:bg-white'
+                } backdrop-blur-sm shadow-lg`}
+              >
+                <TrendingUp className={`w-4 h-4 ${isDarkMode ? 'text-[#CCF301]' : 'text-[#CCF301]'} group-hover/stat:animate-bounce`} />
+                <div>
+                  <span className="font-bold text-[#CCF301] text-base sm:text-lg">
+                    {user.problems}
+                  </span>
+                  <span className={`ml-1.5 text-xs sm:text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    solved
+                  </span>
+                </div>
+              </div>
+
+              {user.streak && (
+                <div
+                  className={`group/stat flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border transition-all duration-300 hover:scale-105 ${
+                    isDarkMode
+                      ? 'bg-slate-800/90 border-slate-600/50 hover:border-[#CCF301]/50 hover:bg-slate-800'
+                      : 'bg-white/90 border-gray-300/50 hover:border-[#CCF301]/50 hover:bg-white'
+                  } backdrop-blur-sm shadow-lg`}
+                >
+                  <Zap className={`w-4 h-4 ${isDarkMode ? 'text-orange-400' : 'text-orange-500'} group-hover/stat:animate-pulse`} />
+                  <div>
+                    <span className={`font-bold text-base sm:text-lg ${isDarkMode ? 'text-orange-400' : 'text-orange-500'}`}>
+                      {user.streak}
+                    </span>
+                    <span className={`ml-1.5 text-xs sm:text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      day streak
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
-      )}
-    </>
+      </div>
+    </div>
   );
 };
 
-export default SidebarProfile;
+export default ChampionCard;

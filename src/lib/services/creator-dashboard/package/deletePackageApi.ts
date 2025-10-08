@@ -44,13 +44,13 @@ export const deletePackageApi = baseApi.injectEndpoints({
         return undefined;
       },
       // This transforms errors to handle 204 as success
-      transformErrorResponse: (response: unknown, meta: { response?: { status?: number } }) => {
-        // If it's actually a 204, don't treat it as an error
-        if (meta?.response?.status === 204) {
-          return null;
-        }
-        return response;
-      },
+      // transformErrorResponse: (response: unknown, meta: { response?: { status?: number } }) => {
+      //   // If it's actually a 204, don't treat it as an error
+      //   if (meta?.response?.status === 204) {
+      //     return null;
+      //   }
+      //   return response;
+      // },
       invalidatesTags: () => [
         { type: 'Packages' }
       ],

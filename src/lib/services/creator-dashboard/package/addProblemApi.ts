@@ -117,21 +117,21 @@ interface AddProblemRequest {
 }
 
 // Define types for transform functions
-interface ErrorResponse {
-  status?: number;
-  data?: unknown;
-}
+// interface ErrorResponse {
+//   status?: number;
+//   data?: unknown;
+// }
 
-interface ResponseMeta {
-  response?: {
-    status?: number;
-  };
-}
+// interface ResponseMeta {
+//   response?: {
+//     status?: number;
+//   };
+// }
 
-interface TransformArgs {
-  packageName: string;
-  problemIds: number[];
-}
+// interface TransformArgs {
+//   packageName: string;
+//   problemIds: number[];
+// }
 
 export const addProblemApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -154,15 +154,15 @@ export const addProblemApi = baseApi.injectEndpoints({
           body: requestBody
         };
       },
-      transformErrorResponse: (response: ErrorResponse, meta: ResponseMeta, arg: TransformArgs) => {
-        console.log('=== API ERROR DEBUG ===');
-        console.log('Response:', JSON.stringify(response, null, 2));
-        console.log('Meta:', JSON.stringify(meta, null, 2));
-        console.log('Request Args:', JSON.stringify(arg, null, 2));
-        console.log('Response Status:', meta?.response?.status);
-        console.log('======================');
-        return response;
-      },
+      // transformErrorResponse: (response: ErrorResponse, meta: ResponseMeta, arg: TransformArgs) => {
+      //   console.log('=== API ERROR DEBUG ===');
+      //   console.log('Response:', JSON.stringify(response, null, 2));
+      //   console.log('Meta:', JSON.stringify(meta, null, 2));
+      //   console.log('Request Args:', JSON.stringify(arg, null, 2));
+      //   console.log('Response Status:', meta?.response?.status);
+      //   console.log('======================');
+      //   return response;
+      // },
       transformResponse: (response: AddProblemResponse) => {
         console.log('=== API SUCCESS DEBUG ===');
         console.log('Success Response:', JSON.stringify(response, null, 2));

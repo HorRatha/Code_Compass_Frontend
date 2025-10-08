@@ -35,11 +35,6 @@ const PathAnimation = ({ }) => {
       {/* Main Title with Source Code Pro font */}
       <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight mb-2" style={{ fontFamily: '"Source Code Pro", monospace' }}>
         
-        {/* "Welcome To" - Static text with theme support */}
-        <div className="mb-2">
-          <span className={isDark ? "text-white" : "text-black"}>Welcome To </span>
-        </div>
-        
         {/* CodeCompass - Reduced height SVG with center alignment */}
         <div className="mb-1">
           <div className="flex justify-center items-center">
@@ -58,19 +53,48 @@ const PathAnimation = ({ }) => {
                 </linearGradient>
               </defs>
               
+              {/* Desktop version - hidden on mobile */}
               <text
                 x="50%"
-                y="50%"
+                y="30%"
                 textAnchor="middle"
                 dominantBaseline="middle"
                 fill="none"
                 stroke={isDark ? "url(#pathGradientDark)" : "url(#pathGradientLight)"}
                 strokeWidth="4"
-                fontSize="200"
+                fontSize="160"
                 fontWeight="900"
                 fontFamily='"Source Code Pro", monospace'
                 strokeDasharray="2000"
                 strokeDashoffset="2000"
+                className="hidden sm:block"
+              >
+                CodeCompass
+                <animate
+                  attributeName="stroke-dashoffset"
+                  values="2000;0"
+                  dur="10s"
+                  repeatCount="indefinite"
+                  calcMode="spline"
+                  keySplines="0.25 0.1 0.25 1"
+                />
+              </text>
+
+              {/* Mobile version - hidden on desktop */}
+              <text
+                x="50%"
+                y="130%"
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fill="none"
+                stroke={isDark ? "url(#pathGradientDark)" : "url(#pathGradientLight)"}
+                strokeWidth="4"
+                fontSize="160"
+                fontWeight="900"
+                fontFamily='"Source Code Pro", monospace'
+                strokeDasharray="2000"
+                strokeDashoffset="2000"
+                className="block sm:hidden"
               >
                 CodeCompass
                 <animate
@@ -85,23 +109,27 @@ const PathAnimation = ({ }) => {
             </svg>
           </div>
         </div>
+
+        {/* "Welcome To" - Static text with theme support */}
+        <div className="mb-1 text-xl sm:text-2xl lg:text-3xl font-semibold">
+          <span className={isDark ? "text-white" : "text-black"}>Master Algorithms & Level Up Your Coding Skills </span>
+        </div>
       </h1>
-      
+
       {/* Description with theme support */}
       <div className="mb-8">
         <p className={`text-lg sm:text-xl lg:text-2xl leading-relaxed max-w-2xl mx-auto ${
           isDark ? "text-gray-300" : "text-gray-700"
         }`}>
-          Master algorithms, and level up your programming skills with our cutting-edge coding platform designed for the next generation of developers.
+          Welcome to the next-generation coding platform for developers.
         </p>
       </div>
 
-     
       {/* Buttons with improved theme support */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         {/* Primary Button - Explore Problems */}
         <a
-          href="#"
+          href="problemset"
           className="
             inline-flex items-center justify-center
             font-semibold text-sm
@@ -109,7 +137,7 @@ const PathAnimation = ({ }) => {
             bg-primary text-black
             transition-all duration-300 ease-out
             shadow-[0_4px_14px_0_rgba(204,243,1,0.15)]
-            hover:shadow-[0_6px_20px_0_rgba(204,243,1,0.25)]
+            hover:shadow-[0_10px_25px_5_rgba(204,243,1,0.25)]
             hover
           "
         >
@@ -118,7 +146,7 @@ const PathAnimation = ({ }) => {
 
         {/* Secondary Button - View Leaderboard with theme support */}
         <a
-          href="#"
+          href="leaderboard"
           className={`
             inline-flex items-center justify-center
             font-semibold text-sm

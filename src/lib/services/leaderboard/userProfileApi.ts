@@ -30,7 +30,7 @@ export const userProfileApi = baseApi.injectEndpoints({
         url: `users/me`,
         method: 'GET',
       }),
-      providesTags: ['UserProfile'],
+      providesTags: ['Users'],
     }),
   }),
 });

@@ -790,7 +790,7 @@ export default function Problemset(): JSX.Element {
     }
   };
 
-const {data: problems, isLoading, isFetching, isError} = useGetAllProblemsQuery();
+const {data: problems, isLoading, isFetching} = useGetAllProblemsQuery();
 
   if (isLoading || isFetching) return <Loader/>
   
