@@ -99,12 +99,12 @@ interface DialogContentProps {
   className?: string;
 }
 
-interface SelectItemProps {
-  value: string;
-  children: ReactNode;
-  onValueChange?: (value: string) => void;
-  onClose?: () => void;
-}
+// interface SelectItemProps {
+//   value: string;
+//   children: ReactNode;
+//   onValueChange?: (value: string) => void;
+//   onClose?: () => void;
+// }
 
 // Define types that match what AllItemsTable expects (with id as number)
 interface Problem {
@@ -393,7 +393,7 @@ export default function CreatorDashboard() {
   // Convert TableItem back to the expected types for AllItemsTable
   const convertToExpectedType = (item: TableItem): Problem | Badge | Package => {
     // Remove the 'type' property and return the base object
-    const { type, ...baseItem } = item;
+    const { ...baseItem } = item;
     return baseItem as Problem | Badge | Package;
   }
 

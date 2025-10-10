@@ -661,12 +661,12 @@ function CreateProblemForm({ onSubmit, editingProblem, onClose }: CreateProblemF
             </div>
 
             <div className="space-y-3">
-              <Label htmlFor="testCases">Test Cases</Label>
+              <Label htmlFor="testCases">Input Cases</Label>
               <Textarea
                 id="testCases"
                 value={formData.testCases}
                 onChange={handleInputChange}
-                placeholder="Enter test cases..."
+                placeholder="Enter input cases..."
                 rows={4}
               />
             </div>

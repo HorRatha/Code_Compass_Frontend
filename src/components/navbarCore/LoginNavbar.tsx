@@ -579,8 +579,8 @@ const LoginNavbar = () => {
   });
 
   useEffect(() => {
-    document.documentElement.classList.add("dark");
-  }, []);
+  document.documentElement.classList.add("dark");
+}, []);
 
   const mainNavItems = [
     { name: "Home", href: "/", icon: Home },

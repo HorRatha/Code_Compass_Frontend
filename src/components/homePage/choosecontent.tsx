@@ -248,7 +248,7 @@ const ChooseContent: React.FC<ChooseContentProps> = ({ isDarkMode = true }) => {
 
         .path-container-choose {
           position: relative;
-          max-width: 1400px;
+
           margin: 0 auto;
           padding: 60px 24px;
         }
@@ -260,7 +260,7 @@ const ChooseContent: React.FC<ChooseContentProps> = ({ isDarkMode = true }) => {
           width: 100%;
           height: 100%;
           pointer-events: none;
-          z-index: 1;
+          z-index: 0;
           overflow: visible;
         }
 
@@ -428,7 +428,7 @@ const ChooseContent: React.FC<ChooseContentProps> = ({ isDarkMode = true }) => {
       <div className="choose-content-wrapper" ref={containerRef}>
         <div className="section-divider-choose"></div>
 
-        <div className="path-container-choose">
+        <div className="path-container-choose max-w-7xl mx-auto px-6 min-h-screen">
           <svg className="path-svg-choose" preserveAspectRatio="none">
             <path className="path-line-choose" id="pathLine"></path>
             <path className="path-glow-choose" id="pathGlow"></path>

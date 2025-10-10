@@ -183,7 +183,8 @@ const Program = () => {
             <line x1="123" y1="57" x2="118" y2="57" stroke="#CCF301" strokeWidth="0.8" opacity="0.6"/>
             <line x1="123" y1="57" x2="123" y2="52" stroke="#CCF301" strokeWidth="0.8" opacity="0.6"/>
             
-            <image x="80" y="34" width="40" height="30" href="/codecompass-2.png" preserveAspectRatio="xMidYMid meet"/>
+            {/* <image x="80" y="34" width="40" height="30" href="/codecompass-2.png" preserveAspectRatio="xMidYMid meet"/> */}
+            <image x="83" y="37" width="35" height="23" href="/compassV.gif" preserveAspectRatio="xMidYMid meet"/>
           </g>
 
           {/* Definitions */}
