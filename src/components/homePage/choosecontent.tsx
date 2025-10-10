@@ -4,7 +4,7 @@ interface ChooseContentProps {
   isDarkMode?: boolean;
 }
 
-const ChooseContent: React.FC<ChooseContentProps> = ({ isDarkMode = true }) => {
+const ChooseContent: React.FC<ChooseContentProps> = () => {
   const pathDataRef = useRef<{ pathLength: number; pathGlow: SVGPathElement | null; pathLine: SVGPathElement | null }>({
     pathLength: 0,
     pathGlow: null,
