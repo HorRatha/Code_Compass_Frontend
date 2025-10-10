@@ -823,12 +823,17 @@ const LoginNavbar = () => {
               className="lg:hidden overflow-hidden"
             >
               <motion.div
-                className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/30 dark:border-gray-700/30 shadow-xl"
+                className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/30 dark:border-gray-700/30 shadow-xl max-h-[calc(100vh-5rem)] overflow-y-auto"
                 initial={{ y: -20 }}
                 animate={{ y: 0 }}
                 transition={{ delay: 0.1 }}
+                style={{
+                  WebkitOverflowScrolling: 'touch',
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#CCF301 transparent'
+                }}
               >
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent dark:via-gray-900/5"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent dark:via-gray-900/5 pointer-events-none"></div>
 
                 <div className="relative px-4 py-6 space-y-1">
                   {mainNavItems.map((item, idx) => {
@@ -894,10 +899,25 @@ const LoginNavbar = () => {
                   </motion.div>
 
                   {isLoggedIn ? (
-                    <MobileUserProfile 
-                      userData={userData}
-                      onCloseMenu={() => setIsMenuOpen(false)}
-                    />
+                    <>
+                      <motion.div
+                        className="border-t border-gray-200/30 dark:border-gray-700/30 pt-4 mt-4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.7 }}
+                      >
+                        <div className="flex items-center justify-between px-4 py-2 mb-4">
+                          <span className="text-gray-600 dark:text-gray-300 font-medium">
+                            Theme
+                          </span>
+                          <UiverseToggle />
+                        </div>
+                      </motion.div>
+                      <MobileUserProfile 
+                        userData={userData}
+                        onCloseMenu={() => setIsMenuOpen(false)}
+                      />
+                    </>
                   ) : (
                     <motion.div
                       className="border-t border-gray-200/30 dark:border-gray-700/30 pt-4 mt-4 space-y-3"
@@ -912,7 +932,7 @@ const LoginNavbar = () => {
                         <UiverseToggle />
                       </div>
 
-                      <div className="px-4">
+                      <div className="px-4 pb-4">
                         <AuthButtons />
                       </div>
                     </motion.div>
