@@ -25,19 +25,16 @@ const ChooseContent: React.FC<ChooseContentProps> = ({ isDarkMode = true }) => {
     const pathGlow = container.querySelector('#pathGlow') as SVGPathElement;
 
     if (!cards.length || !pathLine || !pathGlow) {
-      console.log('Missing elements:', { cards: cards.length, pathLine: !!pathLine, pathGlow: !!pathGlow });
       return null;
     }
 
     const pathContainerRect = pathContainer.getBoundingClientRect();
     const scrollY = window.pageYOffset;
     
-    // Get the actual offset from top of page
     const containerOffsetTop = pathContainerRect.top + scrollY;
 
     const points: { x: number; y: number }[] = [];
 
-    // Starting point at top center
     points.push({
       x: pathContainerRect.width / 2,
       y: -50
@@ -49,7 +46,6 @@ const ChooseContent: React.FC<ChooseContentProps> = ({ isDarkMode = true }) => {
       const contentRect = content?.getBoundingClientRect();
 
       if (contentRect) {
-        // Calculate relative to path container
         const x = rect.left - pathContainerRect.left + contentRect.width / 2;
         const y = rect.top + scrollY - containerOffsetTop + contentRect.height / 2;
         points.push({ x, y });
@@ -57,11 +53,9 @@ const ChooseContent: React.FC<ChooseContentProps> = ({ isDarkMode = true }) => {
     });
 
     if (points.length < 2) {
-      console.log('Not enough points:', points.length);
       return null;
     }
 
-    // Create smooth S-curve path
     let pathD = `M ${points[0].x} ${points[0].y}`;
 
     for (let i = 1; i < points.length; i++) {
@@ -74,7 +68,6 @@ const ChooseContent: React.FC<ChooseContentProps> = ({ isDarkMode = true }) => {
 
       const cpDistance = distance * 0.4;
 
-      // Create curved control points
       const cp1 = {
         x: prev.x + (dx * 0.3),
         y: prev.y + cpDistance
@@ -92,8 +85,6 @@ const ChooseContent: React.FC<ChooseContentProps> = ({ isDarkMode = true }) => {
     pathGlow.setAttribute('d', pathD);
 
     const pathLength = pathGlow.getTotalLength();
-
-    console.log('Path generated:', { pathLength, points: points.length });
 
     return { pathLength, pathGlow, pathLine };
   }, []);
@@ -166,7 +157,6 @@ const ChooseContent: React.FC<ChooseContentProps> = ({ isDarkMode = true }) => {
   }, []);
 
   useEffect(() => {
-    // Wait for cards to render, then init path
     const timer = setTimeout(() => {
       initPath();
       initIntersectionObserver();
@@ -206,49 +196,19 @@ const ChooseContent: React.FC<ChooseContentProps> = ({ isDarkMode = true }) => {
         }
         
         .choose-content-wrapper {
-          --text-primary: ${isDarkMode ? '#ffffff' : '#0b131c'};
-          --text-secondary: ${isDarkMode ? '#94a3b8' : '#475569'};
-          --accent-color: ${isDarkMode ? '#CCF301' : '#0b131c'};
-          --accent-glow: ${isDarkMode ? 'rgba(204, 243, 1, 0.7)' : 'rgba(11, 19, 28, 0.3)'};
-          --line-color: ${isDarkMode ? 'rgba(204, 243, 1, 0.4)' : 'rgba(11, 19, 28, 0.2)'};
-          --card-bg: ${isDarkMode ? 'rgba(15, 23, 42, 0.8)' : 'transparent'};
-          --card-light-gradient: linear-gradient(135deg, #f9fafb 0%, #ffffff 50%, #f3f4f6 100%);
-          --card-border: ${isDarkMode ? 'rgba(204, 243, 1, 0.1)' : 'rgba(11, 19, 28, 0.1)'};
-          color: var(--text-primary);
           position: relative;
-        }
-        
-        .hero-section-choose {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 80px 24px;
-        }
-
-        .title-main-choose {
-          font-size: 3rem; /* text-6xl - 60px */
-          font-weight: 800;
-          letter-spacing: -0.02em;
-          margin-bottom: 16px;
-        }
-
-        .title-gradient-choose {
-          background: linear-gradient(135deg, var(--accent-color) 0%, ${isDarkMode ? '#a8d800' : '#1e293b'} 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
         }
 
         .section-divider-choose {
           max-width: 200px;
           height: 2px;
-          background: linear-gradient(to right, transparent, var(--accent-color), transparent);
+          background: linear-gradient(to right, transparent, currentColor, transparent);
           margin: 0 auto 60px;
+          opacity: 0.3;
         }
 
         .path-container-choose {
           position: relative;
-
           margin: 0 auto;
           padding: 60px 24px;
         }
@@ -266,25 +226,36 @@ const ChooseContent: React.FC<ChooseContentProps> = ({ isDarkMode = true }) => {
 
         .path-line-choose {
           fill: none;
-          stroke: var(--line-color);
+          stroke: #0b131c;
           stroke-width: 3;
           stroke-linecap: round;
           stroke-linejoin: round;
+          opacity: 0.3;
+        }
+
+        .dark .path-line-choose {
+          stroke: #CCF301;
+          opacity: 0.4;
         }
 
         .path-glow-choose {
           fill: none;
-          stroke: var(--accent-color);
+          stroke: #0b131c;
           stroke-width: 3;
           stroke-linecap: round;
           stroke-linejoin: round;
-          filter: drop-shadow(0 0 8px var(--accent-glow)) drop-shadow(0 0 16px var(--accent-glow));
+          filter: drop-shadow(0 0 8px rgba(11, 19, 28, 0.3)) drop-shadow(0 0 16px rgba(11, 19, 28, 0.2));
+        }
+
+        .dark .path-glow-choose {
+          stroke: #CCF301;
+          filter: drop-shadow(0 0 8px rgba(204, 243, 1, 0.7)) drop-shadow(0 0 16px rgba(204, 243, 1, 0.7));
         }
 
         .choose-feature-row {
           position: relative;
           z-index: 2;
-          margin-bottom: 64px; /* space-y-16 - 64px */
+          margin-bottom: 64px;
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 80px;
@@ -299,31 +270,31 @@ const ChooseContent: React.FC<ChooseContentProps> = ({ isDarkMode = true }) => {
           .choose-feature-row {
             grid-template-columns: 1fr;
             gap: 40px;
-            margin-bottom: 32px; /* space-y-8 - 32px */
+            margin-bottom: 32px;
           }
         }
 
         @media (min-width: 769px) and (max-width: 1024px) {
           .choose-feature-row {
-            margin-bottom: 48px; /* space-y-12 - 48px */
+            margin-bottom: 48px;
           }
         }
 
         .choose-feature-card {
           opacity: 0;
           transition: opacity 0.8s ease, transform 0.8s ease;
-          min-height: 300px; /* min-h-[300px] */
+          min-height: 300px;
         }
 
         @media (max-width: 768px) {
           .choose-feature-card {
-            min-height: 200px; /* min-h-[200px] */
+            min-height: 200px;
           }
         }
 
         @media (min-width: 769px) and (max-width: 1024px) {
           .choose-feature-card {
-            min-height: 250px; /* min-h-[250px] */
+            min-height: 250px;
           }
         }
 
@@ -332,69 +303,91 @@ const ChooseContent: React.FC<ChooseContentProps> = ({ isDarkMode = true }) => {
         }
 
         .choose-feature-content {
-          padding: 48px; /* p-12 - 48px */
-          background: ${isDarkMode ? 'var(--card-bg)' : 'var(--card-light-gradient)'};
-          backdrop-filter: ${isDarkMode ? 'blur(20px)' : 'none'};
-          border: 1px solid var(--card-border);
+          padding: 48px;
+          background: white;
+          border: 1px solid rgba(0, 0, 0, 0.1);
           border-radius: 24px;
-          box-shadow: ${isDarkMode ? '0 8px 32px rgba(0, 0, 0, 0.1)' : '0 4px 24px rgba(0, 0, 0, 0.05)'};
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
           transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
           height: 100%;
         }
 
+        .dark .choose-feature-content {
+          background: rgba(15, 23, 42, 0.8);
+          border: 1px solid rgba(204, 243, 1, 0.1);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+          backdrop-filter: blur(20px);
+        }
+
         @media (max-width: 768px) {
           .choose-feature-content {
-            padding: 24px; /* p-6 - 24px */
+            padding: 24px;
           }
         }
 
         @media (min-width: 769px) and (max-width: 1024px) {
           .choose-feature-content {
-            padding: 32px; /* p-8 - 32px */
+            padding: 32px;
           }
         }
 
         .choose-feature-content:hover {
           transform: translateY(-8px);
-          box-shadow: ${isDarkMode ? '0 20px 60px rgba(204, 243, 1, 0.2)' : '0 12px 40px rgba(11, 19, 28, 0.15)'};
-          border-color: var(--accent-color);
+        }
+
+        .choose-feature-content:hover {
+          box-shadow: 0 12px 40px rgba(11, 19, 28, 0.15);
+          border-color: #0b131c;
+        }
+
+        .dark .choose-feature-content:hover {
+          box-shadow: 0 20px 60px rgba(204, 243, 1, 0.2);
+          border-color: #CCF301;
         }
 
         .choose-feature-title {
-          font-size: 1.875rem; /* text-3xl - 30px */
+          font-size: 1.875rem;
           font-weight: 700;
-          color: var(--accent-color);
+          color: #0b131c;
           margin-bottom: 20px;
           letter-spacing: -0.02em;
         }
 
+        .dark .choose-feature-title {
+          color: #CCF301;
+        }
+
         @media (max-width: 768px) {
           .choose-feature-title {
-            font-size: 1.25rem; /* text-xl - 20px */
+            font-size: 1.25rem;
           }
         }
 
         @media (min-width: 769px) and (max-width: 1024px) {
           .choose-feature-title {
-            font-size: 1.5rem; /* text-2xl - 24px */
+            font-size: 1.5rem;
           }
         }
 
         .choose-feature-description {
-          font-size: 1.25rem; /* text-xl - 20px */
+          font-size: 1.25rem;
           line-height: 1.8;
-          color: var(--text-secondary);
+          color: #475569;
+        }
+
+        .dark .choose-feature-description {
+          color: #94a3b8;
         }
 
         @media (max-width: 768px) {
           .choose-feature-description {
-            font-size: 0.875rem; /* text-sm - 14px */
+            font-size: 0.875rem;
           }
         }
 
         @media (min-width: 769px) and (max-width: 1024px) {
           .choose-feature-description {
-            font-size: 1rem; /* text-base - 16px */
+            font-size: 1rem;
           }
         }
 
@@ -402,33 +395,26 @@ const ChooseContent: React.FC<ChooseContentProps> = ({ isDarkMode = true }) => {
           position: absolute;
           width: 16px;
           height: 16px;
-          background: var(--accent-color);
+          background: #CCF301;
           border-radius: 50%;
-          box-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow);
+          box-shadow: 0 0 20px rgba(204, 243, 1, 0.7), 0 0 40px rgba(204, 243, 1, 0.7);
           z-index: 3;
           pointer-events: none;
           transform: translate(-50%, -50%);
           opacity: 0;
         }
 
-        /* Responsive title sizes */
         @media (max-width: 768px) {
-          .title-main-choose {
-            font-size: 1.875rem; /* text-3xl - 30px */
-          }
-        }
-
-        @media (min-width: 769px) and (max-width: 1024px) {
-          .title-main-choose {
-            font-size: 2.25rem; /* text-4xl - 36px */
+          .section-divider-choose {
+            max-width: 200px;
           }
         }
       `}</style>
 
-      <div className="choose-content-wrapper" ref={containerRef}>
+      <div className="choose-content-wrapper text-gray-900 dark:text-white transition-colors duration-300" ref={containerRef}>
         <div className="section-divider-choose"></div>
 
-        <div className="path-container-choose max-w-7xl mx-auto px-6 min-h-screen">
+        <div className="path-container-choose max-w-7xl mx-auto px-6">
           <svg className="path-svg-choose" preserveAspectRatio="none">
             <path className="path-line-choose" id="pathLine"></path>
             <path className="path-glow-choose" id="pathGlow"></path>
