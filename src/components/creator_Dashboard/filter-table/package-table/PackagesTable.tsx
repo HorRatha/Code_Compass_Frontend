@@ -174,10 +174,10 @@ const Button = ({
   ...props
 }: ButtonProps) => {
   const baseClasses =
-    "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background transform active:scale-95 relative overflow-hidden"
+    "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background transform active: relative overflow-hidden"
 
   const variants = {
-    default: "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl hover:scale-105",
+    default: "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl ",
     outline:
       "border-2 border-border hover:border-primary hover:bg-primary/10 backdrop-blur-sm hover:text-primary text-foreground",
     ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -261,7 +261,7 @@ const DropdownMenu = ({ children, className = "" }: DropdownMenuProps) => {
 const DropdownMenuTrigger = ({  onClick }: DropdownMenuTriggerProps) => (
   <button
     onClick={onClick}
-    className="h-9 w-9 p-0 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 hover:scale-110 transition-all duration-200 flex items-center justify-center border-2 border-transparent hover:border-gray-300 dark:hover:border-gray-600"
+    className="h-9 w-9 p-0 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700  transition-all duration-200 flex items-center justify-center border-2 border-transparent hover:border-gray-300 dark:hover:border-gray-600"
     title="More actions"
   >
     <MoreVertical className="w-5 h-5 text-gray-700 dark:text-gray-200" />
@@ -978,7 +978,7 @@ export default function PackagesTable({ onEdit, onDelete, onAddProblem, onAddBad
                           e.stopPropagation()
                           handleRowClick(pkg.id, e)
                         }}
-                        className="hover:scale-105 transition-transform duration-200"
+                        className=" transition-transform duration-200"
                       >
                         <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 border-2 border-blue-200 dark:border-blue-700 cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/50">
                           <Plus className="w-3 h-3 mr-1" />

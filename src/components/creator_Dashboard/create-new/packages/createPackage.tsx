@@ -59,10 +59,10 @@ const Button = ({
   ...props
 }: ButtonProps) => {
   const baseClasses =
-    "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background transform active:scale-95"
+    "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background transform "
 
   const variants = {
-    default: "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl hover:scale-105",
+    default: "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl",
     outline:
       "border-2 border-input hover:border-primary hover:bg-primary/10 backdrop-blur-sm hover:text-primary text-foreground",
     ghost: "hover:bg-accent hover:text-accent-foreground",

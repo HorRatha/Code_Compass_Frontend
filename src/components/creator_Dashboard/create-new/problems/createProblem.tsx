@@ -149,10 +149,10 @@ const Button = ({
   ...props
 }: ButtonProps) => {
   const baseClasses =
-    "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background transform active:scale-95"
+    "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background transform "
 
   const variants = {
-    default: "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl hover:scale-105",
+    default: "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl ",
     outline:
       "border-2 border-input hover:border-primary hover:bg-primary/10 backdrop-blur-sm hover:text-primary text-foreground",
     ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -462,10 +462,7 @@ function CreateProblemForm({ onSubmit, editingProblem, onClose }: CreateProblemF
 
     const filteredHints = formData.hints.filter((hint) => hint.trim() !== "")
 
-    // Normalize difficulty to uppercase and ensure it's a valid type
     const normalizedDifficulty = formData.difficulty.toUpperCase() as "EASY" | "MEDIUM" | "HARD"
-    
-    // Normalize star rating
     const normalizedStar = formData.star as "ZERO" | "ONE" | "TWO" | "THREE"
 
     const apiData = {
@@ -568,13 +565,14 @@ function CreateProblemForm({ onSubmit, editingProblem, onClose }: CreateProblemF
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-8 text-center">
-        <h2 className="text-3xl font-bold text-foreground mb-2">
+    <div className="w-full max-w-2xl mx-auto max-h-[calc(100vh-100px)] flex flex-col">
+      {/* Header */}
+      <div className="px-6 pt-6 pb-4 flex-shrink-0">
+        <h2 className="text-2xl font-bold text-foreground mb-1">
           {editingProblem ? `Edit Problem #${editingProblem.id}` : "Create New Problem"}
         </h2>
-        <p className="text-muted-foreground">
-          {editingProblem ? "Update your coding challenge" : "Design an engaging coding challenge for learners"}
+        <p className="text-sm text-muted-foreground">
+          {editingProblem ? "Update your coding challenge" : "Design an engaging coding challenge"}
         </p>
       </div>
 
@@ -585,55 +583,83 @@ function CreateProblemForm({ onSubmit, editingProblem, onClose }: CreateProblemF
         onClose={hideNotification}
       />
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <Label htmlFor="title">Problem Title *</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                placeholder="Enter a descriptive problem title"
-                required
-              />
-            </div>
+      {/* Scrollable Content */}
+      <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-6 space-y-4">
+        {/* Top Row - Title and Difficulty */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="lg:col-span-2 space-y-2">
+            <Label htmlFor="title">Problem Title *</Label>
+            <Input
+              id="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              placeholder="Enter problem title"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Difficulty *</Label>
+            <Select
+              value={formData.difficulty}
+              onValueChange={(value) => setFormData({ ...formData, difficulty: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select difficulty" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Easy">Easy</SelectItem>
+                <SelectItem value="Medium">Medium</SelectItem>
+                <SelectItem value="Hard">Hard</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
-            <div className="space-y-3">
+        {/* Main Content - Two Column */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Left Column */}
+          <div className="space-y-4">
+            <div className="space-y-2">
               <Label htmlFor="definition">Problem Definition *</Label>
               <Textarea
                 id="definition"
                 value={formData.definition}
                 onChange={handleInputChange}
-                placeholder="Describe the problem clearly and concisely..."
+                placeholder="Describe the problem..."
                 required
-                rows={6}
+                rows={5}
               />
             </div>
 
-            <div className="space-y-3">
-              <Label htmlFor="difficulty">Difficulty *</Label>
-              <Select
-                value={formData.difficulty}
-                onValueChange={(value) => setFormData({ ...formData, difficulty: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select difficulty" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Easy">Easy</SelectItem>
-                  <SelectItem value="Medium">Medium</SelectItem>
-                  <SelectItem value="Hard">Hard</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="space-y-2">
+              <Label htmlFor="testCases">Input Cases</Label>
+              <Textarea
+                id="testCases"
+                value={formData.testCases}
+                onChange={handleInputChange}
+                placeholder="Enter input cases..."
+                rows={3}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="expectedOutput">Expected Output</Label>
+              <Textarea
+                id="expectedOutput"
+                value={formData.expectedOutput}
+                onChange={handleInputChange}
+                placeholder="Enter expected output..."
+                rows={3}
+              />
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="space-y-4">
+          {/* Right Column */}
+          <div className="space-y-4">
+            <div className="space-y-2">
               <Label>Hints (max 3)</Label>
               {formData.hints.map((hint, index) => (
-                <div key={index} className="flex gap-3">
+                <div key={index} className="flex gap-2">
                   <Input
                     value={hint}
                     onChange={(e) => handleHintChange(index, e.target.value)}
@@ -646,7 +672,6 @@ function CreateProblemForm({ onSubmit, editingProblem, onClose }: CreateProblemF
                       variant="destructive"
                       size="sm"
                       onClick={() => removeHint(index)}
-                      className="px-3"
                     >
                       ✕
                     </Button>
@@ -654,115 +679,97 @@ function CreateProblemForm({ onSubmit, editingProblem, onClose }: CreateProblemF
                 </div>
               ))}
               {formData.hints.length < 3 && (
-                <Button type="button" variant="outline" onClick={addHint} className="w-full bg-transparent">
+                <Button type="button" variant="outline" onClick={addHint} className="w-full">
                   + Add Hint
                 </Button>
               )}
             </div>
 
-            <div className="space-y-3">
-              <Label htmlFor="testCases">Input Cases</Label>
-              <Textarea
-                id="testCases"
-                value={formData.testCases}
+            <div className="space-y-2">
+              <Label htmlFor="tags">Tags</Label>
+              <Input
+                id="tags"
+                value={formData.tags}
                 onChange={handleInputChange}
-                placeholder="Enter input cases..."
-                rows={4}
+                placeholder="comma separated tags"
               />
             </div>
 
-            <div className="space-y-3">
-              <Label htmlFor="expectedOutput">Expected Output</Label>
-              <Textarea
-                id="expectedOutput"
-                value={formData.expectedOutput}
-                onChange={handleInputChange}
-                placeholder="Enter expected output..."
-                rows={4}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="coin">Coin Reward</Label>
-            <Input
-              id="coin"
-              type="number"
-              value={formData.coin}
-              onChange={(e) => handleNumberInputChange(e, 'coin')}
-              placeholder="Coin reward (default: 20)"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="star">Star Rating</Label>
-            <Select value={formData.star} onValueChange={(value) => setFormData({ ...formData, star: value })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select star rating" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ZERO">Zero Stars</SelectItem>
-                <SelectItem value="ONE">One Star</SelectItem>
-                <SelectItem value="TWO">Two Stars</SelectItem>
-                <SelectItem value="THREE">Three Stars</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="bestMemoryUsage">Best Memory Usage (MB)</Label>
-            <Input
-              id="bestMemoryUsage"
-              type="number"
-              step="0.1"
-              value={formData.bestMemoryUsage}
-              onChange={(e) => handleNumberInputChange(e, 'bestMemoryUsage')}
-              placeholder="Memory usage (default: 0)"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="bestTimeExecution">Best Time Execution (s)</Label>
-            <Input
-              id="bestTimeExecution"
-              type="number"
-              step="0.01"
-              value={formData.bestTimeExecution}
-              onChange={(e) => handleNumberInputChange(e, 'bestTimeExecution')}
-              placeholder="Time execution (default: 0.1)"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="tags">Tags</Label>
-          <Input
-            id="tags"
-            value={formData.tags}
-            onChange={handleInputChange}
-            placeholder="Enter tags (comma separated)"
-          />
-        </div>
-
-        <div className="pt-6 border-t border-border">
-          <Button type="submit" className="w-full text-lg py-4" disabled={isLoading}>
-            {isLoading ? (
-              <div className="flex items-center space-x-2">
-                <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
-                <span>{editingProblem ? 'Updating Problem...' : 'Creating Problem...'}</span>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-2">
+                <Label htmlFor="coin">Coin Reward</Label>
+                <Input
+                  id="coin"
+                  type="number"
+                  value={formData.coin}
+                  onChange={(e) => handleNumberInputChange(e, 'coin')}
+                  placeholder="20"
+                />
               </div>
-            ) : editingProblem ? (
-              `Update Problem #${editingProblem.id}`
-            ) : (
-              "Create Problem"
-            )}
-          </Button>
+              <div className="space-y-2">
+                <Label>Star Rating</Label>
+                <Select value={formData.star} onValueChange={(value) => setFormData({ ...formData, star: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select star" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ZERO">Zero Stars</SelectItem>
+                    <SelectItem value="ONE">One Star</SelectItem>
+                    <SelectItem value="TWO">Two Stars</SelectItem>
+                    <SelectItem value="THREE">Three Stars</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-2">
+                <Label htmlFor="bestMemoryUsage">Memory (MB)</Label>
+                <Input
+                  id="bestMemoryUsage"
+                  type="number"
+                  step="0.1"
+                  value={formData.bestMemoryUsage}
+                  placeholder="0"
+                  onChange={(e) => handleNumberInputChange(e, 'bestMemoryUsage')}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bestTimeExecution">Time (s)</Label>
+                <Input
+                  id="bestTimeExecution"
+                  type="number"
+                  step="0.01"
+                  value={formData.bestTimeExecution}
+                  placeholder="0.1"
+                  onChange={(e) => handleNumberInputChange(e, 'bestTimeExecution')}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </form>
+
+      {/* Submit Button - Fixed at bottom */}
+      <div className="px-6 py-4 border-t border-border bg-card/30 flex-shrink-0">
+        <Button 
+          type="submit" 
+          onClick={handleSubmit} 
+          className="w-full" 
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
+              <span>{editingProblem ? 'Updating...' : 'Creating...'}</span>
+            </div>
+          ) : editingProblem ? (
+            `Update Problem #${editingProblem.id}`
+          ) : (
+            "Create Problem"
+          )}
+        </Button>
+      </div>
     </div>
   )
 }

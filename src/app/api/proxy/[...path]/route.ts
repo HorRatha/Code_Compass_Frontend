@@ -4,7 +4,7 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 // List of endpoints that don't require authentication
-const PUBLIC_ENDPOINTS = ["auth/register", "auth/login", "auth/refresh", "problems/verified"];
+const PUBLIC_ENDPOINTS = ["auth/register", "auth/login", "auth/refresh", "problems/verified", "leaderboard"];
 
 // Check if the endpoint requires authentication
 function requiresAuthentication(path: string[]): boolean {
