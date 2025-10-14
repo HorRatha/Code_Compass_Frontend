@@ -1,48 +1,41 @@
 import { baseApi } from "../../baseApi";
 
-// Request type based on your API documentation
-export interface ModifyPackageRequest {
-  name: string;
-  description: string;
+interface ModifyPackageRequest {
+  name?: string;
+  description?: string;
 }
 
-// Response type based on your API documentation
-export interface ModifyPackageResponse {
+interface ModifyPackageParams {
+  id: number;
+  data: ModifyPackageRequest;
+}
+
+interface PackageResponse {
   id: number;
   name: string;
   description: string;
-  problems: {
+  status: "PENDING" | "APPROVED";
+  problems: Array<{
     id: number;
     title: string;
     difficulty: "EASY" | "MEDIUM" | "HARD";
     tags: string[];
-  }[];
-  status: "PENDING" | "APPROVED" | "REJECTED";
+  }>;
+  badgesResponse: { name: string } | null;
   author: string;
-  badgesResponse: {
-    id: number;
-    name: string;
-    description: string;
-    icon_url: string;
-    created_at: string;
-    is_deleted: boolean;
-    is_verified: boolean;
-    author: string;
-    status: "PENDING" | "APPROVED" | "REJECTED";
-  };
 }
 
 export const modifyPackageApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    modifyPackage: builder.mutation<ModifyPackageResponse, { id: number } & ModifyPackageRequest>({
-      query: ({ id, ...body }) => ({
+    modifyPackage: builder.mutation<PackageResponse, ModifyPackageParams>({
+      query: ({ id, data }) => ({
         url: `packages/${id}`,
         method: 'PATCH',
-        body
+        body: data
       }),
       invalidatesTags: (result, error, { id }) => [
-        { type: 'Packages', id },
-        { type: 'Packages' }
+        { type: 'Packages' },
+        { type: 'Packages', id }
       ],
     }),
   }),
