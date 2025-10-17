@@ -22,16 +22,13 @@ export default function ContactUsPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [animationStage, setAnimationStage] = useState(0);
 
-  // Initialize theme from document class (managed by navbar)
   useEffect(() => {
-    // Check if dark mode is already set by navbar
     const checkDarkMode = () => {
       setIsDarkMode(document.documentElement.classList.contains('dark'));
     };
     
     checkDarkMode();
     
-    // Watch for theme changes from navbar
     const observer = new MutationObserver(() => {
       checkDarkMode();
     });
@@ -41,13 +38,12 @@ export default function ContactUsPage() {
       attributeFilter: ['class']
     });
     
-    // Trigger animations sequentially
     const timeouts = [
-      setTimeout(() => setAnimationStage(1), 100),  // Hero
-      setTimeout(() => setAnimationStage(2), 300),  // Form
-      setTimeout(() => setAnimationStage(3), 500),  // Contact info 1
-      setTimeout(() => setAnimationStage(4), 700),  // Contact info 2
-      setTimeout(() => setAnimationStage(5), 900),  // Contact info 3
+      setTimeout(() => setAnimationStage(1), 100),
+      setTimeout(() => setAnimationStage(2), 300),
+      setTimeout(() => setAnimationStage(3), 500),
+      setTimeout(() => setAnimationStage(4), 700),
+      setTimeout(() => setAnimationStage(5), 900),
     ];
 
     return () => {
@@ -64,18 +60,31 @@ export default function ContactUsPage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSubmit = () => {
     if (!formData.firstName || !formData.email || !formData.message) {
-      alert('Please fill in all required fields');
+      alert('Please fill in all required fields (First Name, Email, and Message)');
       return;
     }
     
     setIsSubmitting(true);
     
+    const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+    const subjectLine = formData.subject 
+      ? `${formData.subject} - Contact from ${fullName}`
+      : `Contact from ${fullName}`;
+    
+    const emailBody = `Name: ${fullName}
+Email: ${formData.email}
+Subject: ${formData.subject || 'N/A'}
+
+Message:
+${formData.message}`;
+    
+    const mailtoLink = `mailto:codecompass.istad.co@gmail.com?subject=${encodeURIComponent(subjectLine)}&body=${encodeURIComponent(emailBody)}`;
+    
+    window.location.href = mailtoLink;
+    
     setTimeout(() => {
-      alert("Message sent successfully! We&apos;ll get back to you within 24 hours.");
       setFormData({
         firstName: '',
         lastName: '',
@@ -84,7 +93,7 @@ export default function ContactUsPage() {
         message: ''
       });
       setIsSubmitting(false);
-    }, 2000);
+    }, 1000);
   };
 
   const themeClasses = {
@@ -103,14 +112,11 @@ export default function ContactUsPage() {
   };
 
   return (
-    <div className="min-h-screen relative transition-colors duration-500 ">
-      {/* Background with your specified gradient */}
+    <div className="min-h-screen relative transition-colors duration-500">
       <div className="absolute inset-0 bg-[#fdfff4] dark:from-black dark:via-slate-900 dark:to-black dark:bg-gradient-to-br"></div>
 
-      {/* Content */}
       <div className={`relative ${themeClasses.text}`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-6 sm:py-8 lg:py-12">
-          {/* Hero Section */}
           <div className={`text-center mb-8 sm:mb-12 lg:mb-16 transition-all duration-1000 ease-out ${
             animationStage >= 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}>
@@ -118,13 +124,11 @@ export default function ContactUsPage() {
               Get in <span className="text-[#CCF301]">Touch</span>
             </h2>
             <p className={`text-base sm:text-lg lg:text-xl ${themeClasses.textSecondary} max-w-2xl mx-auto px-2 font-sans`}>
-  {"Have questions about CodeCompass? Need technical support? We're here to help you on your coding journey."}
-</p>
-
+              {"Have questions about CodeCompass? Need technical support? We're here to help you on your coding journey."}
+            </p>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12 lg:mb-16">
-            {/* Contact Form */}
             <div className={`lg:col-span-2 transition-all duration-1000 ease-out delay-200 ${
               animationStage >= 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}>
@@ -134,11 +138,11 @@ export default function ContactUsPage() {
                   Send us a message
                 </h3>
                 
-                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="group">
                       <label htmlFor="firstName" className={`block text-sm font-medium ${themeClasses.textSecondary} mb-2 transition-all duration-200 group-focus-within:text-[#CCF301] font-sans`}>
-                        First Name
+                        First Name *
                       </label>
                       <input 
                         type="text" 
@@ -168,7 +172,7 @@ export default function ContactUsPage() {
                   
                   <div className="group">
                     <label htmlFor="email" className={`block text-sm font-medium ${themeClasses.textSecondary} mb-2 transition-all duration-200 group-focus-within:text-[#CCF301] font-sans`}>
-                      Email Address
+                      Email Address *
                     </label>
                     <input 
                       type="email" 
@@ -193,18 +197,18 @@ export default function ContactUsPage() {
                       className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 ${themeClasses.inputBg} border ${themeClasses.inputBorder} rounded-lg ${themeClasses.inputText} focus:outline-none focus:border-[#CCF301] focus:shadow-[0_0_0_3px_rgba(204,243,1,0.1)] transition-all duration-200 text-sm sm:text-base font-sans`}
                     >
                       <option value="">Select a topic</option>
-                      <option value="technical">Technical Support</option>
-                      <option value="account">Account Issues</option>
-                      <option value="billing">Billing Questions</option>
-                      <option value="feedback">Feedback & Suggestions</option>
-                      <option value="partnership">Partnership Inquiry</option>
-                      <option value="other">Other</option>
+                      <option value="Technical Support">Technical Support</option>
+                      <option value="Account Issues">Account Issues</option>
+                      <option value="Billing Questions">Billing Questions</option>
+                      <option value="Feedback & Suggestions">Feedback & Suggestions</option>
+                      <option value="Partnership Inquiry">Partnership Inquiry</option>
+                      <option value="Other">Other</option>
                     </select>
                   </div>
                   
                   <div className="group">
                     <label htmlFor="message" className={`block text-sm font-medium ${themeClasses.textSecondary} mb-2 transition-all duration-200 group-focus-within:text-[#CCF301] font-sans`}>
-                      Message
+                      Message *
                     </label>
                     <textarea 
                       id="message" 
@@ -219,20 +223,18 @@ export default function ContactUsPage() {
                   
                   <div className="flex justify-center">
                     <button 
-                      type="submit" 
+                      onClick={handleSubmit}
                       disabled={isSubmitting}
                       className="bg-[#CCF301] hover:bg-[#B8E000] text-black font-medium py-2.5 px-8 rounded-lg transition-all duration-300 shadow-[0_0_15px_rgba(204,243,1,0.2)] hover:shadow-[0_0_25px_rgba(204,243,1,0.4)] sm:hover:scale-[1.05] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-sm font-mono"
                     >
-                      {isSubmitting ? 'Sending...' : 'Send Message'}
+                      {isSubmitting ? 'Opening Email...' : 'Send Message'}
                     </button>
                   </div>
-                </form>
+                </div>
               </div>
             </div>
             
-            {/* Contact Information */}
             <div className="space-y-4 sm:space-y-6">
-              {/* Quick Contact */}
               <div className={`${themeClasses.cardBg} backdrop-blur-xl border ${themeClasses.cardBorder} rounded-xl sm:rounded-2xl p-4 sm:p-6 transition-all duration-700 ease-out hover:transform sm:hover:translate-y-[-8px] hover:shadow-[0_25px_50px_-12px_rgba(204,243,1,0.25)] ${
                 animationStage >= 3 ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
               }`}>
@@ -250,7 +252,12 @@ export default function ContactUsPage() {
                     </div>
                     <div>
                       <p className={`font-medium ${themeClasses.text} text-sm sm:text-base font-mono`}>Email</p>
-                      <p className={`${themeClasses.textSecondary} text-xs sm:text-sm font-sans`}>support@codecompass.com</p>
+                      <a 
+                        href="mailto:codecompass.istad.co@gmail.com" 
+                        className={`${themeClasses.textSecondary} hover:text-[#CCF301] transition-colors text-xs sm:text-sm font-sans break-all`}
+                      >
+                        codecompass.istad.co@gmail.com
+                      </a>
                     </div>
                   </div>
                   
@@ -280,8 +287,7 @@ export default function ContactUsPage() {
                 </div>
               </div>
               
-              {/* FAQ Link */}
-              <div className={`${themeClasses.cardBg} backdrop-blur-xl border ${themeClasses.cardBorder} rounded-xl sm:rounded-2xl p-4 sm:p-6 transition-all duration-700 ease-out hover:transform sm:hover:translate-y-[-8px] hover:shadow-[0_25px_50px_-12px_rgba(204,243,1,0.25)] ${
+              {/* <div className={`${themeClasses.cardBg} backdrop-blur-xl border ${themeClasses.cardBorder} rounded-xl sm:rounded-2xl p-4 sm:p-6 transition-all duration-700 ease-out hover:transform sm:hover:translate-y-[-8px] hover:shadow-[0_25px_50px_-12px_rgba(204,243,1,0.25)] ${
                 animationStage >= 4 ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
               }`}>
                 <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center font-mono">
@@ -297,9 +303,8 @@ export default function ContactUsPage() {
                     <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
                   </svg>
                 </a>
-              </div>
+              </div> */}
               
-              {/* Social Links */}
               <div className={`${themeClasses.cardBg} backdrop-blur-xl border ${themeClasses.cardBorder} rounded-xl sm:rounded-2xl p-4 sm:p-6 transition-all duration-700 ease-out hover:transform sm:hover:translate-y-[-8px] hover:shadow-[0_25px_50px_-12px_rgba(204,243,1,0.25)] ${
                 animationStage >= 5 ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
               }`}>
@@ -308,15 +313,11 @@ export default function ContactUsPage() {
                   Follow Us
                 </h3>
                 <div className="flex space-x-3 sm:space-x-4">
-                  {[ 1, 2, 3].map((index) => (
+                  {[1, 2, 3].map((index) => (
                     <a 
                       key={index}
                       href="#" 
-                      className={`w-10 h-10 ${themeClasses.socialBg} ${themeClasses.socialHover} rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:rotate-12 group hover`}
-                      style={{
-                        animationDelay: `${index * 100}ms`,
-                        animation: animationStage >= 5 ? 'fadeInUp 0.6s ease-out forwards' : 'none'
-                      }}
+                      className={`w-10 h-10 ${themeClasses.socialBg} ${themeClasses.socialHover} rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:rotate-12 group`}
                     >
                       {index === 1 && (
                         <svg className={`w-4 sm:w-5 h-4 sm:h-5 ${themeClasses.socialIcon} group-hover:text-[#CCF301] transition-colors duration-300`} fill="currentColor" viewBox="0 0 24 24">

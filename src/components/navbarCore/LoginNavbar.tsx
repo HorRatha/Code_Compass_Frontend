@@ -15,7 +15,6 @@ import {
   Shield,
   FileText,
   User,
-  Settings,
   LogOut,
   Coins,
   Star,
@@ -419,7 +418,7 @@ const MobileUserProfile = ({ userData, onCloseMenu }: { userData: UserData | und
 
   const baseProfileItems = [
     { name: "Profile", href: "/profile", icon: UserIcon, color: "text-blue-500" },
-    { name: "Settings", href: "/settings", icon: Settings, color: "text-gray-500" },
+   { name: "Creator Dashboard", href: "/creator-dashboard", icon: LayoutDashboard, color: "text-purple-500" },
   ];
 
   const creatorItems = isCreator 

@@ -367,7 +367,7 @@ function SidebarProfile({
         {sidebarContent}
       </div>
 
-      {/* Mobile Toggle Button - Only show when sidebar is hidden */}
+      {/* Mobile Toggle Button - Only show when sidebar is hidden and user is authenticated */}
       {!isMobileOpen && (
         <button
           onClick={() => setIsMobileOpen(true)}
@@ -427,7 +427,7 @@ function SidebarProfile({
 }
 
 export default function ModernCodeCompassLeaderboard() {
-  const [isDarkMode, setIsDarkMode] = useState(true)
+  const [isDarkMode, setIsDarkMode] = useState(false)
   const [isDesktopSidebarVisible, setIsDesktopSidebarVisible] = useState(false)
 
   const {
@@ -440,19 +440,28 @@ export default function ModernCodeCompassLeaderboard() {
   const { data: userProfile, isLoading: userProfileLoading } = useGetUserProfileQuery()
 
   useEffect(() => {
+    // Check if dark mode is enabled on the document
     const checkDarkMode = () => {
-      setIsDarkMode(document.documentElement.classList.contains("dark"))
+      const isDark = document.documentElement.classList.contains("dark")
+      setIsDarkMode(isDark)
     }
 
+    // Check initially
     checkDarkMode()
 
-    const observer = new MutationObserver(() => {
-      checkDarkMode()
+    // Create a MutationObserver to watch for class changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          checkDarkMode()
+        }
+      })
     })
 
+    // Start observing
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ["class"],
+      attributeFilter: ['class']
     })
 
     return () => {
@@ -717,12 +726,23 @@ export default function ModernCodeCompassLeaderboard() {
                   </>
                 )}
 
-                {topThree.map((player) => (
-                  <TableRow key={player.rank} player={player} isTopThree isDarkMode={isDarkMode} primaryColor={primaryColor} />
+                {topThree.map((player, index) => (
+                  <TableRow 
+                    key={`${player.rank}-${player.username}-${index}`} 
+                    player={player} 
+                    isTopThree 
+                    isDarkMode={isDarkMode} 
+                    primaryColor={primaryColor} 
+                  />
                 ))}
 
-                {remaining.map((player) => (
-                  <TableRow key={player.rank} player={player} isDarkMode={isDarkMode} primaryColor={primaryColor} />
+                {remaining.map((player, index) => (
+                  <TableRow 
+                    key={`${player.rank}-${player.username}-${index}`} 
+                    player={player} 
+                    isDarkMode={isDarkMode} 
+                    primaryColor={primaryColor} 
+                  />
                 ))}
               </div>
 
@@ -835,9 +855,11 @@ export default function ModernCodeCompassLeaderboard() {
           animation-delay: 0.5s;
         }
       `}</style>
-    </div>
+    </div>  
   )
 }
+
+// ... (keep the PodiumCard and TableRow components exactly as they are)
 
 function PodiumCard({ player, position }: { 
   player: Player
@@ -1149,7 +1171,7 @@ function TableRow({
           {player.problems}
         </div>
       </div>
-    </>
+    </> 
   )
 }
 

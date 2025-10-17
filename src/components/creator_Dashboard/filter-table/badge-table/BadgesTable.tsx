@@ -382,14 +382,17 @@ const EditModal = ({ isOpen, badge, onSave, onCancel, isUpdating }: EditModalPro
             {formData.icon_url && !errors.icon_url && (
               <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                 <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">Preview:</p>
-                <Image 
-                  src={formData.icon_url} 
-                  alt="Preview" 
-                  className="w-16 h-16 rounded-lg object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none'
-                  }}
-                />
+               <Image
+  src={formData.icon_url || '/fallback.png'}
+  alt="Preview"
+  width={64}   // required
+  height={64}  // required
+  className="w-16 h-16 rounded-lg object-cover"
+  onError={(e) => {
+    (e.target as HTMLImageElement).style.display = 'none';
+  }}
+/>
+
               </div>
             )}
           </div>

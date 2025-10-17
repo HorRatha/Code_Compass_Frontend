@@ -3,6 +3,7 @@
 import { useState, useEffect, ChangeEvent, FormEvent} from "react"
 import Image from "next/image"
 import { useCreateBadgeMutation } from "@/lib/services/creator-dashboard/badge/createBadgeApi"
+import { useUploadMediaMutation } from "@/lib/services/creator-dashboard/badge/uploadMediaApi"
 
 // Define proper interfaces
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -204,9 +205,11 @@ function CreateBadgeForm() {
   const [uploadMethod, setUploadMethod] = useState<"upload" | "url">("upload")
   const [notification, setNotification] = useState<NotificationState | null>(null)
   const [imageError, setImageError] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState<string>("")
 
-  // Use the mutation hook
-  const [createBadge, { isLoading }] = useCreateBadgeMutation()
+  // Use the mutation hooks
+  const [uploadMedia, { isLoading: isUploadingMedia }] = useUploadMediaMutation()
+  const [createBadge, { isLoading: isCreatingBadge }] = useCreateBadgeMutation()
 
   // Auto-hide notification after 5 seconds
   useEffect(() => {
@@ -230,16 +233,19 @@ function CreateBadgeForm() {
         return
       }
 
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
         setNotification({
           type: 'error',
-          message: 'File size should be less than 5MB'
+          message: 'File size should be less than 10MB'
         })
         return
       }
 
       setIconFile(file)
+      
+      // Clear previous icon_url if switching from URL method
+      setFormData({ ...formData, icon_url: "" })
 
       // Create preview
       const reader = new FileReader()
@@ -248,15 +254,6 @@ function CreateBadgeForm() {
       }
       reader.readAsDataURL(file)
     }
-  }
-
-  const convertToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = reject
-      reader.readAsDataURL(file)
-    })
   }
 
   const resetForm = () => {
@@ -268,6 +265,7 @@ function CreateBadgeForm() {
     setIconFile(null)
     setIconPreview("")
     setImageError(false)
+    setUploadProgress("")
 
     // Reset file input
     const fileInput = document.getElementById("iconFile") as HTMLInputElement
@@ -280,9 +278,19 @@ function CreateBadgeForm() {
     try {
       let iconUrl = formData.icon_url
 
-      // If using file upload, convert to base64 (temporary solution)
+      // If upload method is selected and there's a file, upload it first
       if (uploadMethod === "upload" && iconFile) {
-        iconUrl = await convertToBase64(iconFile)
+        setUploadProgress("Uploading image...")
+        
+        try {
+          const uploadResult = await uploadMedia(iconFile).unwrap()
+          iconUrl = uploadResult.uri
+          console.log("Image uploaded successfully:", uploadResult)
+        } catch (uploadError) {
+          console.error("Failed to upload image:", uploadError)
+          const error = uploadError as ApiError
+          throw new Error(error?.data?.message || error?.message || "Failed to upload image")
+        }
       }
 
       // Validate we have an icon URL
@@ -311,13 +319,10 @@ function CreateBadgeForm() {
         return
       }
 
-      console.log("Submitting badge data:", {
-        name: formData.name.trim(),
-        description: formData.description.trim(),
-        icon_url: iconUrl,
-      })
+      setUploadProgress("Creating badge...")
+      console.log("Creating badge with icon_url:", iconUrl)
 
-      // Call the API
+      // Call the API to create badge
       const result = await createBadge({
         name: formData.name.trim(),
         description: formData.description.trim(),
@@ -326,7 +331,7 @@ function CreateBadgeForm() {
 
       console.log("Badge created successfully:", result)
 
-      // Show success notification with status
+      // Show success notification
       setNotification({
         type: 'success',
         message: `Badge "${result.name}" created successfully! Status: ${result.status}`
@@ -334,6 +339,7 @@ function CreateBadgeForm() {
 
       // Reset form on success
       resetForm()
+      setUploadProgress("")
     } catch (err) {
       console.error("Failed to create badge:", err)
       
@@ -344,12 +350,14 @@ function CreateBadgeForm() {
         type: 'error',
         message: errorMessage
       })
+      setUploadProgress("")
     }
   }
 
   const handleUploadMethodChange = (method: "upload" | "url") => {
     setUploadMethod(method)
     setImageError(false)
+    setUploadProgress("")
     // Clear the other method's data
     if (method === "upload") {
       setFormData({ ...formData, icon_url: "" })
@@ -368,6 +376,8 @@ function CreateBadgeForm() {
   const handleImageLoad = () => {
     setImageError(false)
   }
+
+  const isSubmitting = isCreatingBadge || isUploadingMedia
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -404,6 +414,7 @@ function CreateBadgeForm() {
                 placeholder="e.g., Expert Developer"
                 required
                 maxLength={100}
+                disabled={isSubmitting}
               />
             </div>
 
@@ -418,6 +429,7 @@ function CreateBadgeForm() {
                 required
                 maxLength={500}
                 rows={4}
+                disabled={isSubmitting}
               />
               <p className="text-xs text-muted-foreground">{formData.description.length}/500 characters</p>
             </div>
@@ -435,6 +447,7 @@ function CreateBadgeForm() {
                     checked={uploadMethod === "upload"}
                     onChange={(e) => handleUploadMethodChange(e.target.value as "upload" | "url")}
                     className="w-4 h-4 text-primary focus:ring-primary focus:ring-2"
+                    disabled={isSubmitting}
                   />
                   <span className="text-sm font-medium">Upload File</span>
                 </label>
@@ -445,6 +458,7 @@ function CreateBadgeForm() {
                     checked={uploadMethod === "url"}
                     onChange={(e) => handleUploadMethodChange(e.target.value as "upload" | "url")}
                     className="w-4 h-4 text-primary focus:ring-primary focus:ring-2"
+                    disabled={isSubmitting}
                   />
                   <span className="text-sm font-medium">Enter URL</span>
                 </label>
@@ -461,8 +475,9 @@ function CreateBadgeForm() {
                   accept="image/*"
                   onChange={handleIconUpload}
                   className="cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+                  disabled={isSubmitting}
                 />
-                <p className="text-xs text-muted-foreground">Accepted formats: JPG, PNG, GIF, SVG (Max 5MB)</p>
+                <p className="text-xs text-muted-foreground">Accepted formats: JPG, PNG, GIF, SVG (Max 10MB)</p>
                 {iconPreview && (
                   <div className="bg-muted/30 rounded-xl p-4 border border-border">
                     <Label htmlFor="preview" className="block mb-3 font-semibold">Preview</Label>
@@ -479,6 +494,7 @@ function CreateBadgeForm() {
                       <div className="text-sm text-muted-foreground">
                         <p className="font-medium text-foreground">{iconFile?.name}</p>
                         <p>Size: {iconFile ? (iconFile.size / 1024).toFixed(1) + " KB" : ""}</p>
+                        <p className="text-xs text-primary mt-2 font-medium">✓ Ready to upload</p>
                       </div>
                     </div>
                   </div>
@@ -493,6 +509,7 @@ function CreateBadgeForm() {
                   onChange={(e) => setFormData({ ...formData, icon_url: e.target.value })}
                   placeholder="https://example.com/badge-icon.png"
                   type="url"
+                  disabled={isSubmitting}
                 />
                 {formData.icon_url && (
                   <div className="bg-muted/30 rounded-xl p-4 border border-border">
@@ -523,11 +540,16 @@ function CreateBadgeForm() {
 
         {/* Submit Button */}
         <div className="pt-6 border-t border-border">
-          <Button onClick={handleSubmit} className="w-full text-lg py-4" size="lg" disabled={isLoading}>
-            {isLoading ? (
+          <Button 
+            onClick={handleSubmit} 
+            className="w-full text-lg py-4" 
+            size="lg" 
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
               <div className="flex items-center space-x-2">
                 <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
-                <span>Creating Badge...</span>
+                <span>{uploadProgress || "Processing..."}</span>
               </div>
             ) : (
               "Create Badge"
