@@ -101,9 +101,12 @@ const Questions = () => {
       <div className="text-center mt-12 sm:mt-16">
         <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
           Can&apos;t find what you&apos;re looking for? Contact our{' '}
-          <span className="font-semibold text-gray-900 dark:text-white hover:text-[#CCF301] dark:hover:text-[#CCF301] cursor-pointer transition-colors duration-200">
+          <a 
+            href="/contact"
+            className="font-semibold text-gray-900 dark:text-white hover:text-[#CCF301] dark:hover:text-[#CCF301] cursor-pointer transition-colors duration-200"
+          >
             customer support team
-          </span>
+          </a>
         </p>
       </div>
     </div>

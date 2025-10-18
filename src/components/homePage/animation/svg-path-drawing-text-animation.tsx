@@ -125,8 +125,8 @@ const PathAnimation = ({ }) => {
         </p>
       </div>
 
-      {/* Buttons with improved theme support */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+           {/* Buttons with improved theme support */}
+      <div className="flex flex-row gap-4 justify-center flex-wrap"> 
         {/* Primary Button - Explore Problems */}
         <a
           href="problemset"
