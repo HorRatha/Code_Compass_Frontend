@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
   Menu,
   X,
-  User,
-  LogIn,
   Home,
   Puzzle,
   Trophy,
@@ -23,148 +21,77 @@ import {
   useScroll,
   useMotionValueEvent,
 } from "framer-motion";
-import { signIn } from "next-auth/react";
+import { UiverseToggle } from "../UiverseToggle";
+import AuthButtons from "../AuthComponents/AuthButton";
+import { MobileAuthSection } from "./Before-Login/MobileAuthSection";
 
-// Uiverse Toggle Component
-const UiverseToggle = () => {
-  const [isDark, setIsDark] = useState(true);
+// Inline CSS styles
+const NavbarStyles = () => (
+  <style jsx global>{`
+    .nav-link-glow {
+      position: relative;
+      transition: transform 0.15s ease-out, color 0.15s ease-out, background-color 0.15s ease-out, box-shadow 0.15s ease-out;
+      overflow: hidden;
+    }
 
-  useEffect(() => {
-    document.documentElement.classList.add("dark");
-  }, []);
+    .nav-link-glow:hover,
+    .nav-link-glow:focus {
+      transform: translateY(-3px);
+    }
 
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle("dark");
-  };
+    .nav-link-glow::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 0;
+      height: 3px;
+      transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                  left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                  box-shadow 0.3s ease, 
+                  background-color 0.3s ease;
+      border-radius: 9999px;
+    }
 
-  return (
-    <div className="uiverse-toggle">
-      <div className="toggle-switch">
-        <label className="switch-label">
-          <input
-            type="checkbox"
-            className="checkbox"
-            checked={isDark}
-            onChange={toggleTheme}
-          />
-          <span className="slider"></span>
-        </label>
-      </div>
+    .nav-link-glow:hover::after,
+    .nav-link-glow:focus::after {
+      width: 90%;
+      left: 5%;
+    }
 
-      <style jsx>{`
-        .uiverse-toggle .toggle-switch {
-          position: relative;
-          width: 50px;
-          height: 25px;
-          --light: #d8dbe0;
-          --dark: #28292c;
-          --link: rgb(27, 129, 112);
-          --link-hover: rgb(24, 94, 82);
-        }
+    /* Light Mode */
+    .nav-link-glow:hover,
+    .nav-link-glow:focus {
+      color: #0b131c !important;
+      background-color: rgba(11, 19, 28, 0.05);
+      text-shadow: none;
+      box-shadow: 0 0 5px rgba(11, 19, 28, 0.15);
+    }
 
-        .uiverse-toggle .switch-label {
-          position: absolute;
-          width: 100%;
-          height: 25px;
-          background-color: var(--dark);
-          border-radius: 12.5px;
-          cursor: pointer;
-          border: 1.5px solid var(--dark);
-          transition: all 0.3s ease;
-        }
+    .nav-link-glow:hover::after,
+    .nav-link-glow:focus::after {
+      background-color: #0b131c;
+      box-shadow: 0 0 8px rgba(11, 19, 28, 0.5), 
+                  0 0 15px rgba(11, 19, 28, 0.3);
+    }
 
-        .uiverse-toggle .switch-label:hover {
-          transform: scale(1.05);
-        }
+    /* Dark Mode */
+    .dark .nav-link-glow:hover,
+    .dark .nav-link-glow:focus {
+      color: #CCF301 !important;
+      background-color: rgba(204, 243, 1, 0.1);
+      text-shadow: 0 0 3px rgba(204, 243, 1, 0.6);
+      box-shadow: 0 0 8px rgba(204, 243, 1, 0.3);
+    }
 
-        .uiverse-toggle .checkbox {
-          position: absolute;
-          display: none;
-        }
-
-        .uiverse-toggle .slider {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          border-radius: 12.5px;
-          -webkit-transition: 0.3s;
-          transition: 0.3s;
-        }
-
-        .uiverse-toggle .checkbox:checked ~ .slider {
-          background-color: var(--light);
-        }
-
-        .uiverse-toggle .slider::before {
-          content: "";
-          position: absolute;
-          top: 5px;
-          left: 5px;
-          width: 12.5px;
-          height: 12.5px;
-          border-radius: 50%;
-          -webkit-box-shadow: inset 6px -2px 0px 0px var(--light);
-          box-shadow: inset 6px -2px 0px 0px var(--light);
-          background-color: var(--dark);
-          -webkit-transition: 0.3s;
-          transition: 0.3s;
-        }
-
-        .uiverse-toggle .checkbox:checked ~ .slider::before {
-          -webkit-transform: translateX(25px);
-          -ms-transform: translateX(25px);
-          transform: translateX(25px);
-          background-color: var(--dark);
-          -webkit-box-shadow: none;
-          box-shadow: none;
-        }
-
-        .uiverse-toggle .checkbox:focus + .slider {
-          box-shadow: 0 0 0 2px rgba(204, 243, 1, 0.5);
-        }
-
-        @media (prefers-color-scheme: dark) {
-          .uiverse-toggle .toggle-switch {
-            --light: #f1f3f4;
-            --dark: #1f2937;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .uiverse-toggle .toggle-switch {
-            width: 45px;
-            height: 22px;
-          }
-          
-          .uiverse-toggle .switch-label {
-            height: 22px;
-            border-radius: 11px;
-          }
-          
-          .uiverse-toggle .slider {
-            border-radius: 11px;
-          }
-          
-          .uiverse-toggle .slider::before {
-            width: 11px;
-            height: 11px;
-            top: 4.5px;
-            left: 4.5px;
-            -webkit-box-shadow: inset 5px -1.5px 0px 0px var(--light);
-            box-shadow: inset 5px -1.5px 0px 0px var(--light);
-          }
-          
-          .uiverse-toggle .checkbox:checked ~ .slider::before {
-            -webkit-transform: translateX(22px);
-            -ms-transform: translateX(22px);
-            transform: translateX(22px);
-          }
-        }
-      `}</style>
-    </div>
-  );
-};
+    .dark .nav-link-glow:hover::after,
+    .dark .nav-link-glow:focus::after {
+      background-color: #CCF301;
+      box-shadow: 0 0 8px #CCF301, 
+                  0 0 15px rgba(204, 243, 1, 0.5);
+    }
+  `}</style>
+);
 
 const OfficialNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -182,18 +109,12 @@ const OfficialNavbar = () => {
     }
   });
 
-  useEffect(() => {
-    document.documentElement.classList.add("dark");
-  }, []);
-
-  // Main navigation items
   const mainNavItems = [
     { name: "Home", href: "/", icon: Home },
     { name: "Problems", href: "/problemset", icon: Puzzle },
     { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
   ];
 
-  // More dropdown items
   const moreItems = [
     { name: "Document", href: "/document", icon: FileText },
     { name: "About Us", href: "/about", icon: Users },
@@ -203,6 +124,7 @@ const OfficialNavbar = () => {
 
   return (
     <>
+      <NavbarStyles />
       <motion.nav
         className="fixed top-0 left-0 right-0 z-50"
         initial={{ y: -100 }}
@@ -242,6 +164,7 @@ const OfficialNavbar = () => {
 
           <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
+              {/* Logo Section with Theme-Aware Logo Switching */}
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -253,15 +176,26 @@ const OfficialNavbar = () => {
                   <div className="relative">
                     <motion.div
                       className="relative w-12 h-12 flex items-center justify-center"
-                      whileHover={{ rotate: 5 }}
+                      // whileHover={{ rotate: 5 }}
                       transition={{ type: "spring", stiffness: 400 }}
                     >
+                      {/* Light Mode Logo */}
+                      <Image
+                        src="/CodeCompassLM.png"
+                        alt="CodeCompass Logo"
+                        width={55}
+                        height={55}
+                        className="w-12 h-12 object-contain dark:hidden"
+                        priority
+                      />
+
+                      {/* Dark Mode Logo */}
                       <Image
                         src="/codecompass-2.png"
                         alt="CodeCompass Logo"
                         width={55}
                         height={55}
-                        className="w-12 h-12 object-contain"
+                        className="w-12 h-12 object-contain hidden dark:block"
                         priority
                       />
 
@@ -276,6 +210,7 @@ const OfficialNavbar = () => {
                 </Link>
               </motion.div>
 
+              {/* Desktop Navigation */}
               <div className="hidden lg:flex items-center space-x-1 relative">
                 {mainNavItems.map((item, id) => {
                   const IconComponent = item.icon;
@@ -283,7 +218,7 @@ const OfficialNavbar = () => {
                     <motion.div key={item.name} className="relative">
                       <Link
                         href={item.href}
-                        className="flex items-center space-x-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-[#CCF301] rounded-xl transition-all duration-200 font-medium relative group z-10"
+                        className="nav-link-glow flex items-center space-x-2 px-4 py-2 text-gray-600 dark:text-gray-300 rounded-xl transition-all duration-200 font-medium relative group z-10"
                         onMouseEnter={() => setHoveredItem(id)}
                         onMouseLeave={() => setHoveredItem(null)}
                       >
@@ -294,7 +229,7 @@ const OfficialNavbar = () => {
                       {hoveredItem === id && (
                         <motion.div
                           layoutId="navbar-hover"
-                          className="absolute inset-0 bg-[#CCF301]/10 rounded-xl"
+                          className="absolute inset-0 bg-[#CCF301]/10 dark:bg-[#CCF301]/10 rounded-xl"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
@@ -309,11 +244,12 @@ const OfficialNavbar = () => {
                   );
                 })}
 
+                {/* More Dropdown */}
                 <div className="relative">
                   <motion.button
                     onMouseEnter={() => setIsMoreOpen(true)}
                     onMouseLeave={() => setIsMoreOpen(false)}
-                    className="flex items-center space-x-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-[#CCF301] hover:bg-[#CCF301]/10 rounded-xl transition-all duration-200 font-medium relative group"
+                    className="nav-link-glow flex items-center space-x-2 px-4 py-2 text-gray-600 dark:text-gray-300 rounded-xl transition-all duration-200 font-medium relative group"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -324,7 +260,6 @@ const OfficialNavbar = () => {
                     >
                       <ChevronDown className="h-4 w-4" />
                     </motion.div>
-                    <div className="absolute inset-0 bg-[#CCF301]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 -z-10"></div>
                   </motion.button>
 
                   <AnimatePresence>
@@ -350,17 +285,12 @@ const OfficialNavbar = () => {
                               >
                                 <Link
                                   href={item.href}
-                                  className="flex items-center space-x-3 px-3 py-3 text-gray-600 dark:text-gray-300 hover:text-[#CCF301] hover:bg-[#CCF301]/10 transition-all duration-200 rounded-lg group relative"
+                                  className="nav-link-glow flex items-center space-x-3 px-3 py-3 text-gray-600 dark:text-gray-300 transition-all duration-200 rounded-lg group relative"
                                 >
                                   <IconComponent className="h-5 w-5" />
                                   <span className="text-sm font-medium">
                                     {item.name}
                                   </span>
-
-                                  <motion.div
-                                    className="absolute inset-0 bg-gradient-to-r from-[#CCF301]/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100"
-                                    transition={{ duration: 0.2 }}
-                                  />
                                 </Link>
                               </motion.div>
                             );
@@ -372,39 +302,13 @@ const OfficialNavbar = () => {
                 </div>
               </div>
 
+              {/* Desktop Auth Section */}
               <div className="hidden lg:flex items-center space-x-3">
                 <UiverseToggle />
-                
-                <motion.button
-                  onClick={() => signIn("keycloak")}
-                  className="flex items-center space-x-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-[#CCF301] hover:bg-[#CCF301]/10 rounded-xl transition-all duration-200 font-medium relative group"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <LogIn className="h-4 w-4" />
-                  <span>Login</span>
-                  <div className="absolute inset-0 bg-[#CCF301]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 -z-10"></div>
-                </motion.button>
-
-                <Link href="/signup">
-                  <motion.button
-                    className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-[#CCF301] to-[#CCF301]/80 text-gray-900 hover:from-[#CCF301]/90 hover:to-[#CCF301]/70 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl hover:shadow-[#CCF301]/25 relative overflow-hidden"
-                    whileHover={{ scale: 1.05, y: -1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <User className="h-4 w-4" />
-                    <span>Sign Up</span>
-
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                      initial={{ x: "-100%" }}
-                      whileHover={{ x: "100%" }}
-                      transition={{ duration: 0.6 }}
-                    />
-                  </motion.button>
-                </Link>
+                <AuthButtons />
               </div>
 
+              {/* Mobile Menu Button */}
               <motion.button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="lg:hidden p-2 text-gray-600 dark:text-gray-300 hover:text-[#CCF301] hover:bg-[#CCF301]/10 rounded-xl transition-all duration-200 relative group"
@@ -440,6 +344,7 @@ const OfficialNavbar = () => {
           </div>
         </motion.div>
 
+        {/* Mobile Menu */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
@@ -450,12 +355,17 @@ const OfficialNavbar = () => {
               className="lg:hidden overflow-hidden"
             >
               <motion.div
-                className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/30 dark:border-gray-700/30 shadow-xl"
+                className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/30 dark:border-gray-700/30 shadow-xl max-h-[calc(100vh-5rem)] overflow-y-auto"
                 initial={{ y: -20 }}
                 animate={{ y: 0 }}
                 transition={{ delay: 0.1 }}
+                style={{
+                  WebkitOverflowScrolling: 'touch',
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#CCF301 transparent'
+                }}
               >
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent dark:via-gray-900/5"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent dark:via-gray-900/5 pointer-events-none"></div>
 
                 <div className="relative px-4 py-6 space-y-1">
                   {mainNavItems.map((item, idx) => {
@@ -470,7 +380,7 @@ const OfficialNavbar = () => {
                         <Link
                           href={item.href}
                           onClick={() => setIsMenuOpen(false)}
-                          className="flex items-center space-x-3 px-4 py-3 text-gray-600 dark:text-gray-300 hover:text-[#CCF301] hover:bg-[#CCF301]/10 rounded-xl transition-all duration-200 font-medium group relative"
+                          className="nav-link-glow flex items-center space-x-3 px-4 py-3 text-gray-600 dark:text-gray-300 rounded-xl transition-all duration-200 font-medium group relative"
                         >
                           <IconComponent className="h-5 w-5" />
                           <span>{item.name}</span>
@@ -506,7 +416,7 @@ const OfficialNavbar = () => {
                           <Link
                             href={item.href}
                             onClick={() => setIsMenuOpen(false)}
-                            className="flex items-center space-x-3 px-4 py-3 text-gray-600 dark:text-gray-300 hover:text-[#CCF301] hover:bg-[#CCF301]/10 rounded-xl transition-all duration-200 font-medium relative group"
+                            className="nav-link-glow flex items-center space-x-3 px-4 py-3 text-gray-600 dark:text-gray-300 rounded-xl transition-all duration-200 font-medium relative group"
                           >
                             <IconComponent className="h-5 w-5" />
                             <span>{item.name}</span>
@@ -521,54 +431,20 @@ const OfficialNavbar = () => {
                   </motion.div>
 
                   <motion.div
-                    className="border-t border-gray-200/30 dark:border-gray-700/30 pt-4 mt-4 space-y-3"
+                    className="border-t border-gray-200/30 dark:border-gray-700/30 pt-4 mt-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 1 }}
+                    transition={{ delay: 0.7 }}
                   >
-                    <div className="flex items-center justify-between px-4 py-2">
+                    <div className="flex items-center justify-between px-4 py-2 mb-4">
                       <span className="text-gray-600 dark:text-gray-300 font-medium">
                         Theme
                       </span>
                       <UiverseToggle />
                     </div>
-
-                    <motion.button
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        signIn("keycloak");
-                      }}
-                      className="w-full flex items-center space-x-3 px-4 py-3 text-gray-600 dark:text-gray-300 hover:text-[#CCF301] hover:bg-[#CCF301]/10 rounded-xl transition-all duration-200 font-medium relative group"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <LogIn className="h-5 w-5" />
-                      <span>Login</span>
-                      <motion.div
-                        className="absolute inset-0 bg-[#CCF301]/5 rounded-xl opacity-0 group-hover:opacity-100"
-                        transition={{ duration: 0.2 }}
-                      />
-                    </motion.button>
-
-                    <Link href="/signup">
-                      <motion.button
-                        onClick={() => setIsMenuOpen(false)}
-                        className="w-full flex items-center space-x-3 px-4 py-3 bg-gradient-to-r from-[#CCF301] to-[#CCF301]/80 text-gray-900 hover:from-[#CCF301]/90 hover:to-[#CCF301]/70 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl hover:shadow-[#CCF301]/25 relative overflow-hidden"
-                        whileHover={{ scale: 1.02, y: -1 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <User className="h-5 w-5" />
-                        <span>Sign Up</span>
-
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                          initial={{ x: "-100%" }}
-                          whileHover={{ x: "100%" }}
-                          transition={{ duration: 0.6 }}
-                        />
-                      </motion.button>
-                    </Link>
                   </motion.div>
+
+                  <MobileAuthSection onCloseMenu={() => setIsMenuOpen(false)} />
                 </div>
               </motion.div>
             </motion.div>
@@ -576,6 +452,7 @@ const OfficialNavbar = () => {
         </AnimatePresence>
       </motion.nav>
 
+      {/* Spacer for fixed navbar */}
       <div className="h-16"></div>
     </>
   );

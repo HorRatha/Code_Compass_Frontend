@@ -1,6 +1,4 @@
 "use client";
-
-import { useState, useEffect } from "react";
 import {
   Shield,
   FileText,
@@ -34,7 +32,7 @@ function PrivacySection({ icon: Icon, title, content }: PrivacySectionProps) {
   return (
     <section className="mb-10">
       <h3 className="text-2xl font-bold mb-4 flex items-center">
-        <Icon className="mr-3 h-6 w-6 text-[#b4ff00]" />
+        <Icon className="mr-3 h-6 w-6 text-primary" />
         {title}
       </h3>
 
@@ -44,19 +42,19 @@ function PrivacySection({ icon: Icon, title, content }: PrivacySectionProps) {
             <h4 className="text-xl font-semibold mb-2">{item.subtitle}</h4>
           )}
           {item.text && (
-            <p className="text-gray-300 dark:text-gray-700 leading-relaxed mb-2">
+            <p className="dark:text-gray-300 text-black/70 leading-relaxed mb-2">
               {item.text}
             </p>
           )}
           {item.list && (
-            <ul className="list-disc list-inside mb-2 ml-4 text-gray-300 dark:text-gray-700 space-y-1">
+            <ul className="list-disc list-inside mb-2 ml-4 dark:text-white text-black/70 space-y-1">
               {item.list.map((li, i) => (
                 <li key={i}>{li}</li>
               ))}
             </ul>
           )}
           {item.note && (
-            <p className="text-gray-300 dark:text-gray-700">{item.note}</p>
+            <p className="text-black/70 dark:text-white">{item.note}</p>
           )}
         </div>
       ))}
@@ -172,32 +170,40 @@ const privacySections: PrivacySectionProps[] = [
 
 // ================== Main Page ==================
 export default function PrivacyPolicyPage() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+//   const [isDark, setIsDark] = useState(false);
+//   const [mounted, setMounted] = useState<boolean>(false)
 
-  // Detect system preference
-  useEffect(() => {
-    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setIsDarkMode(dark);
-  }, []);
+//     useEffect(() => {
+//       setMounted(true);
+//       const saved = localStorage.getItem('darkMode');
+//       if (saved) {
+//         setIsDark(JSON.parse(saved));
+//       }
+//     }, []);
 
-  const sectionBg = isDarkMode
-    ? "bg-gray-900 text-white"
-    : "bg-gray-50 text-black";
+// useEffect(() => {
+//     if (mounted) {
+//       if (isDark) {
+//         document.documentElement.classList.add('dark');
+//       } else {
+//         document.documentElement.classList.remove('dark');
+//       }
+//       localStorage.setItem('darkMode', JSON.stringify(isDark));
+//     }
+//   }, [isDark, mounted]);
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-500 ${sectionBg} font-['Inter',sans-serif]`}
+      className="pt-16 min-h-screen transition-colors duration-500 dark:bg-gray-900 bg-gray-50"
     >
       {/* Hero Section */}
       <HeroSection />
 
       {/* Privacy Content */}
       <section
-        className={`px-6 py-16 lg:px-8 lg:py-24 transition-colors duration-500 ${
-          isDarkMode ? "bg-gray-900" : "bg-gray-100"
-        }`}
+        className="dark:bg-gray-900 bg-gray-200 px-6 py-16 lg:px-8 lg:py-24 transition-colors duration-500"
       >
-        <div className="mx-auto max-w-4xl bg-gray-800 dark:bg-gray-100 dark:text-black p-8 rounded-2xl shadow-lg transition-colors duration-500">
+        <div className="mx-auto max-w-4xl dark:bg-gray-800 bg-gray-100 text-black/80 dark:text-white p-8 rounded-2xl shadow-lg transition-colors duration-500">
           <h2 className="text-2xl font-semibold mb-6">
             Our Commitment to Your Privacy
           </h2>

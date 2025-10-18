@@ -131,7 +131,7 @@ export default function ContactUsPage() {
 
   return (
     <div className="min-h-screen relative transition-colors duration-500" style={{ fontFamily: 'Barlow, sans-serif' }}>
-      <div className="absolute inset-0 bg-[#fdfff4] dark:from-black dark:via-slate-900 dark:to-black dark:bg-gradient-to-br"></div>
+       <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-black dark:via-slate-900 dark:to-black"></div>
 
       <div className={`relative ${themeClasses.text}`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-6 sm:py-8 lg:py-12">
