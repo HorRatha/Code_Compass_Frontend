@@ -84,8 +84,7 @@ class CodeCompass {
         if (l < h) {
             int p = part(a, l, h);
             sort(a, l, p-1); sort(a, p+1, h);
-        }
-    }
+        }}
     static int part(int[] a, int l, int h) {
         int p = a[h], i = l-1;
         for (int j = l; j < h; j++)
@@ -93,8 +92,7 @@ class CodeCompass {
         swap(a, i+1, h); return i+1;
     }
     static void swap(int[] a, int i, int j) {
-        int t=a[i]; a[i]=a[j]; a[j]=t; }
-}`,
+        int t=a[i]; a[i]=a[j]; a[j]=t; }}`,
   },
   {
     id: 3,
@@ -113,10 +111,8 @@ public:
             auto [dist, u] = pq.top(); pq.pop();
             for (auto [v, w] : g[u])
                 if (d[u] + w < d[v])
-                    d[v] = d[u] + w, pq.push({-d[v], v});
-        } return d;
-    }
-};`,
+                    d[v] = d[u] + w, pq.push({-d[v],v});
+        } return d;}};`,
   },
 ]
 
@@ -165,7 +161,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
     const langStyle = getLanguagesStyle(language)
 
-    // Syntax highlighting function
+    // Syntax highlighting function with theme support
     const highlightCode = (code: string, lang?: string) => {
       if (!code) return code
 
@@ -205,11 +201,13 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           "return",
           "for",
           "while",
+          "auto",
         ],
         python: [
           "def",
           "if",
           "else",
+          "elif",
           "return",
           "for",
           "in",
@@ -225,10 +223,13 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
       const langKeywords = keywords[lang as keyof typeof keywords] || []
 
-      // Apply basic syntax highlighting
+      // Apply syntax highlighting - keywords will be styled with Tailwind classes
       langKeywords.forEach((keyword) => {
         const regex = new RegExp(`\\b${keyword}\\b`, "g")
-        highlighted = highlighted.replace(regex, `<span style="color: #ff6b6b; font-weight: bold;">${keyword}</span>`)
+        highlighted = highlighted.replace(
+          regex,
+          `<span class="text-rose-500 dark:text-rose-400 font-bold">${keyword}</span>`
+        )
       })
 
       return highlighted
@@ -286,7 +287,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           </div>
           {language && (
             <div className="flex items-center gap-2">
-              <span className="text-xs px-3 py-1 rounded-full bg-white/20 dark:bg-white/10 text-white/90 uppercase font-mono font-medium border border-white/30 dark:border-white/20 backdrop-blur-sm">
+              <span className="text-xs px-3 py-1 rounded-full bg-white/20 dark:bg-white/10 text-gray-800 dark:text-white/90 uppercase font-mono font-medium border border-white/30 dark:border-white/20 backdrop-blur-sm">
                 {language === "cpp" ? "C++" : language}
               </span>
             </div>
@@ -294,12 +295,12 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         </div>
 
         <div className="flex h-[calc(100%-50px)] relative z-10">
-          <div className="w-12 bg-black/5 dark:bg-black/10 border-r border-white/20 dark:border-white/10 flex flex-col text-white/60 dark:text-white/50 text-xs font-mono backdrop-blur-sm">
+          <div className="w-12 bg-black/5 dark:bg-black/10 border-r border-white/20 dark:border-white/10 flex flex-col text-gray-600 dark:text-white/60 text-xs font-mono backdrop-blur-sm">
             {code &&
               code.split("\n").map((_, index) => (
                 <div
                   key={index}
-                  className="px-2 py-0.5 text-right leading-5 hover:text-white/80 dark:hover:text-white/70 transition-colors"
+                  className="px-2 py-0.5 text-right leading-5 hover:text-gray-900 dark:hover:text-white/80 transition-colors"
                 >
                   {index + 1}
                 </div>
@@ -309,7 +310,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           <div className="flex-1 relative overflow-hidden">
             {code ? (
               <div className="relative z-10 p-4 h-full overflow-auto">
-                <pre className="text-xs sm:text-sm font-mono leading-5 text-white/95 dark:text-white/90 drop-shadow-sm">
+                <pre className="text-xs sm:text-sm font-mono leading-5 text-gray-900 dark:text-white/95 drop-shadow-sm">
                   <code
                     className="block"
                     dangerouslySetInnerHTML={{
@@ -407,7 +408,7 @@ const CardSwap: React.FC<CardSwapProps> = ({
 
   const refs = useMemo(
     () => childArr.map(() => React.createRef<HTMLDivElement>()),
-    [childArr], // Include the actual array, not just its length
+    [childArr],
   )
   const order = useRef<number[]>(Array.from({ length: childArr.length }, (_, i) => i))
 
