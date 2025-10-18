@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useSession } from "next-auth/react";
-import OfficialNavbar from "./OfficialNavbar";
+import OfficialNavbar from "./Before-Login/OfficialNavbar";
 import LoginNavbar from "./After-Login/LoginNavbar";
 
 const Navbar = () => {

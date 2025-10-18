@@ -21,9 +21,9 @@ import {
   useScroll,
   useMotionValueEvent,
 } from "framer-motion";
-import { UiverseToggle } from "../UiverseToggle";
-import AuthButtons from "../AuthComponents/AuthButton";
-import { MobileAuthSection } from "./Before-Login/MobileAuthSection";
+import { UiverseToggle } from "../../UiverseToggle";
+import AuthButtons from "../../AuthComponents/AuthButton";
+import { MobileAuthSection } from "./MobileAuthSection";
 
 // Inline CSS styles
 const NavbarStyles = () => (
