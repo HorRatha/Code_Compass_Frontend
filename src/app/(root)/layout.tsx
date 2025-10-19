@@ -4,6 +4,7 @@ import StoreProvider from "../StoreProvider";
 import Navbar from "@/components/navbarCore/navbar";
 import Footer from "@/components/footer";
 import SessionProviderWrapper from "../SessionProviderWrapper";
+import NoInternetComponent from "@/components/NoInternetComponent";
 
 
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ export default function RootLayout({
         <StoreProvider>
           <Navbar />
           {children}
+          <NoInternetComponent/>
           <Footer />
         </StoreProvider>
       </SessionProviderWrapper>

@@ -15,6 +15,7 @@ const Homepage = () => {
       <div className="absolute inset-0 bg-white dark:bg-black">
         {/* Main gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-black dark:via-slate-900 dark:to-black"></div>
+        
       </div>
 
       {/* Content */}
