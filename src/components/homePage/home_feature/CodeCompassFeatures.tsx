@@ -163,28 +163,6 @@ export default function CodeCompassFeatures() {
               transition: 'opacity 0.3s ease-out'
             }}
           >
-            {/* Outer glow rings */}
-            <div className="absolute inset-0 -translate-x-1/2 -translate-y-1/2">
-              <div className="absolute w-12 h-12 rounded-full animate-ping" style={{
-                background: isDarkMode
-                  ? 'radial-gradient(circle, rgba(204, 243, 1, 0.4) 0%, transparent 70%)'
-                  : 'radial-gradient(circle, rgba(11, 19, 28, 0.4) 0%, transparent 70%)',
-                animationDuration: '2s'
-              }} />
-              <div className="absolute w-8 h-8 rounded-full animate-pulse" style={{
-                background: isDarkMode
-                  ? 'radial-gradient(circle, rgba(204, 243, 1, 0.6) 0%, transparent 70%)'
-                  : 'radial-gradient(circle, rgba(11, 19, 28, 0.6) 0%, transparent 70%)',
-                animationDuration: '1.5s'
-              }} />
-              <div className="absolute w-5 h-5 rounded-full" style={{
-                background: isDarkMode
-                  ? 'radial-gradient(circle, rgba(204, 243, 1, 0.8) 0%, transparent 80%)'
-                  : 'radial-gradient(circle, rgba(11, 19, 28, 0.8) 0%, transparent 80%)',
-                animation: 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite'
-              }} />
-            </div>
-            
             {/* Core dot */}
             <div 
               className="absolute w-4 h-4 rounded-full -translate-x-1/2 -translate-y-1/2"

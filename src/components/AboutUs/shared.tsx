@@ -166,7 +166,7 @@ export function TeamCard({ name, role, image, isLarge = false, telegram, github,
 
   return (
     <div
-      className={`group relative ${isLarge ? "w-full sm:w-80 lg:w-96" : "w-full sm:w-72 lg:w-80"} transition-all duration-500 `}
+      className={`group relative ${isLarge ? "w-full sm:w-80 lg:w-96" : "w-full sm:w-72 lg:w-80"} transition-all duration-500`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -219,15 +219,15 @@ export function TeamCard({ name, role, image, isLarge = false, telegram, github,
 
             {/* Image Container */}
             <div className="absolute inset-4 sm:inset-5 lg:inset-6 rounded-full overflow-hidden ring-4 ring-white dark:ring-gray-900 shadow-2xl">
-  <Image
-    src={image}
-    alt={name}
-    width={500}
-    height={500}
-    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:rotate-3"
-  />
-  <div className="absolute inset-0 bg-gradient-to-t from-[#0b131c]/60 dark:from-[#CCF301]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-</div>
+              <Image
+                src={image}
+                alt={name}
+                width={500}
+                height={500}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:rotate-3"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0b131c]/60 dark:from-[#CCF301]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            </div>
 
             <div className="absolute -top-1 -left-1 w-3 h-3 rounded-full bg-[#0b131c] dark:bg-[#CCF301] opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-[#0b131c] dark:bg-[#CCF301] opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -255,14 +255,14 @@ export function TeamCard({ name, role, image, isLarge = false, telegram, github,
           </p>
         </div>
 
-        {/* Social Links */}
-        <div className="relative z-10 flex justify-center space-x-3 sm:space-x-4 mt-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+        {/* Social Links - Always visible on mobile, hover on desktop */}
+        <div className="relative z-10 flex justify-center space-x-3 sm:space-x-4 mt-6 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-500 transform translate-y-0 sm:translate-y-4 sm:group-hover:translate-y-0">
           {telegram && (
             <a 
               href={telegram}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover-spin p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-gray-800/50 hover:bg-[#0b131c]/10 dark:hover:bg-[#CCF301]/20 text-gray-600 dark:text-gray-400 hover:text-[#0b131c] dark:hover:text-[#CCF301] transition-all duration-300 transform "
+              className="p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-gray-800/50 hover:bg-[#0b131c]/10 dark:hover:bg-[#CCF301]/20 active:bg-[#0b131c]/20 dark:active:bg-[#CCF301]/30 text-gray-600 dark:text-gray-400 hover:text-[#0b131c] dark:hover:text-[#CCF301] active:text-[#0b131c] dark:active:text-[#CCF301] transition-all duration-300 transform hover:scale-110 active:scale-95 hover:rotate-[360deg]"
               title="Telegram"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -275,7 +275,7 @@ export function TeamCard({ name, role, image, isLarge = false, telegram, github,
               href={github}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover-spin p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-gray-800/50 hover:bg-[#0b131c]/10 dark:hover:bg-[#CCF301]/20 text-gray-600 dark:text-gray-400 hover:text-[#0b131c] dark:hover:text-[#CCF301] transition-all duration-300 transform "
+              className="p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-gray-800/50 hover:bg-[#0b131c]/10 dark:hover:bg-[#CCF301]/20 active:bg-[#0b131c]/20 dark:active:bg-[#CCF301]/30 text-gray-600 dark:text-gray-400 hover:text-[#0b131c] dark:hover:text-[#CCF301] active:text-[#0b131c] dark:active:text-[#CCF301] transition-all duration-300 transform hover:scale-110 active:scale-95 hover:rotate-[360deg]"
               title="GitHub"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -288,7 +288,7 @@ export function TeamCard({ name, role, image, isLarge = false, telegram, github,
               href={linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover-spin p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-gray-800/50 hover:bg-[#0b131c]/10 dark:hover:bg-[#CCF301]/20 text-gray-600 dark:text-gray-400 hover:text-[#0b131c] dark:hover:text-[#CCF301] transition-all duration-300 transform "
+              className="p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-gray-800/50 hover:bg-[#0b131c]/10 dark:hover:bg-[#CCF301]/20 active:bg-[#0b131c]/20 dark:active:bg-[#CCF301]/30 text-gray-600 dark:text-gray-400 hover:text-[#0b131c] dark:hover:text-[#CCF301] active:text-[#0b131c] dark:active:text-[#CCF301] transition-all duration-300 transform hover:scale-110 active:scale-95 hover:rotate-[360deg]"
               title="LinkedIn"
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -301,114 +301,3 @@ export function TeamCard({ name, role, image, isLarge = false, telegram, github,
     </div>
   )
 }
-
-// constants.tsx
-export const STATS = [
-  { value: "100+", label: "Algorithm Challenges" },
-  { value: "150K+", label: "Developer Community" },
-  { value: "95%", label: "Interview Success" },
-  { value: "FAANG", label: "Placement Rate" },
-]
-
-export const ACCENT_COLOR_LIGHT = "#0b131c"
-export const ACCENT_COLOR_DARK = "#CCF301"
-
-export const MENTORS_DATA = [
-  { 
-    name: "Mr. Kay Kao", 
-    role: "Instructor", 
-    image: "/image/teacherkeo.jpg",
-    telegram: "https://t.me/yourusername",
-    github: "https://github.com/yourusername",
-    linkedin: "https://linkedin.com/in/yourusername"
-  },
-  { 
-    name: "Mr. Sreng Chipor", 
-    role: "Instructor", 
-    image: "/image/mentor-2.jpg",
-    telegram: "https://t.me/yourusername",
-    github: "https://github.com/yourusername",
-    linkedin: "https://linkedin.com/in/yourusername"
-  },
-]
-
-export const CORE_TEAM_DATA = [
-  { 
-    name: "Chheng Panharoth", 
-    role: "Full-Stack Developer", 
-    image: "/image/team-leader.jpg",
-    telegram: "https://t.me/panharoth_chheng",
-    github: "https://github.com/Panharoth06",
-    linkedin: "https://www.linkedin.com/in/panha-roth-59b305309"
-  },
-  { 
-    name: "Chheng Devith", 
-    role: "Full-Stack Developer", 
-    image: "/image/devit.jpg",
-    telegram: "https://t.me/yourusername",
-    github: "https://github.com/yourusername",
-    linkedin: "https://linkedin.com/in/yourusername"
-  },
-  { 
-    name: "Rin Bunvarn", 
-    role: "Full-Stack Developer", 
-    image: "/image/bunvarn.jpg",
-    telegram: "https://t.me/yourusername",
-    github: "https://github.com/yourusername",
-    linkedin: "https://linkedin.com/in/yourusername"
-  },
-  { 
-    name: "Hor Rotha", 
-    role: "Full-Stack Developer", 
-    image: "/image/rotha.jpg",
-    telegram: "https://t.me/Xeinn7",
-    github: "https://github.com/HorRatha",
-    linkedin: "https://www.linkedin.com/in/hor-ratha-42bb35388"
-  },
-  { 
-    name: "Seu Narong", 
-    role: "Full-Stack Developer", 
-    image: "/image/narong.jpg",
-    telegram: "https://t.me/yourusername",
-    github: "https://github.com/NarongSeu",
-    linkedin: "https://linkedin.com/in/yourusername"
-  },
-  { 
-    name: "Mom Raksmey", 
-    role: "Full-Stack Developer", 
-    image: "/image/raksmey.jpg",
-    telegram: "https://t.me/Raksmeyy41",
-    github: "https://github.com/raksmeymom",
-    linkedin: "https://www.linkedin.com/in/mom-raksmey-3b0288389"
-  },
-  { 
-    name: "Thang Kimsang", 
-    role: "Full-Stack Developer", 
-    image: "/image/kimsang.jpg",
-    telegram: "https://t.me/yourusername",
-    github: "https://github.com/yourusername",
-    linkedin: "https://linkedin.com/in/yourusername"
-  },
-]
-
-// =================== MISSION DATA ===================
-export const MISSION_ITEMS = [
-  {
-    icon: "< />",
-    title: "Algorithm Mastery",
-    desc: "From basic sorting to advanced dynamic programming, master every data structure and algorithm with progressive difficulty levels.",
-    delay: "delay-0"
-  },
-  {
-    icon: "🎯",
-    title: "Beginner-Friendly",
-    desc: "Step-by-step challenges designed to help beginners gain confidence and grow their coding skills efficiently.",
-    delay: "delay-200"
-  },
-  {
-    icon: "🚀",
-    title: "Problem-Solving Skills",
-    desc: "Sharpen your problem-solving skills and get ready for real-world technical interviews.",
-    delay: "delay-400"
-  },
-]

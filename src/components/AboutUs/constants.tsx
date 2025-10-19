@@ -14,16 +14,16 @@ export const MENTORS_DATA = [
     name: "Mr. Kay Kao", 
     role: "Instructor", 
     image: "/image/teacherkeo.jpg",
-    telegram: "https://t.me/yourusername",
-    github: "https://github.com/yourusername",
+    telegram: "https://t.me/keo_KAY",
+    github: "https://github.com/keoKAY",
     linkedin: "https://linkedin.com/in/yourusername"
   },
   { 
     name: "Mr. Sreng Chipor", 
     role: "Instructor", 
     image: "/image/mentor-2.jpg",
-    telegram: "https://t.me/yourusername",
-    github: "https://github.com/yourusername",
+    telegram: "https://t.me/jiporsreng",
+    github: "https://github.com/jiporCK",
     linkedin: "https://linkedin.com/in/yourusername"
   },
 ]
@@ -41,16 +41,16 @@ export const CORE_TEAM_DATA = [
     name: "Chheng Devith", 
     role: "Full-Stack Developer", 
     image: "/image/devit.jpg",
-    telegram: "https://t.me/yourusername",
-    github: "https://github.com/yourusername",
+    telegram: "https://t.me/chengdevith",
+    github: "https://github.com/chengdevith",
     linkedin: "https://linkedin.com/in/yourusername"
   },
   { 
     name: "Rin Bunvarn", 
     role: "Full-Stack Developer", 
     image: "/image/bunvarn.jpg",
-    telegram: "https://t.me/yourusername",
-    github: "https://github.com/yourusername",
+    telegram: "https://t.me/buniee0",
+    github: "https://github.com/bunvarn06",
     linkedin: "https://linkedin.com/in/yourusername"
   },
   { 
@@ -65,7 +65,7 @@ export const CORE_TEAM_DATA = [
     name: "Seu Narong", 
     role: "Full-Stack Developer", 
     image: "/image/narong.jpg",
-    telegram: "https://t.me/yourusername",
+    telegram: "https://t.me/NarongSeu",
     github: "https://github.com/NarongSeu",
     linkedin: "https://linkedin.com/in/yourusername"
   },
@@ -81,8 +81,8 @@ export const CORE_TEAM_DATA = [
     name: "Thang Kimsang", 
     role: "Full-Stack Developer", 
     image: "/image/kimsang.jpg",
-    telegram: "https://t.me/yourusername",
-    github: "https://github.com/yourusername",
+    telegram: "https://t.me/thanhkimsang",
+    github: "https://github.com/kimsang-thanh",
     linkedin: "https://linkedin.com/in/yourusername"
   },
 ]
