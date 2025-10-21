@@ -1,9 +1,11 @@
 "use client"
 
-import { useState, useEffect, ChangeEvent, FormEvent} from "react"
+import type React from "react"
+
+import { useState, useEffect, type ChangeEvent, type FormEvent } from "react"
 import Image from "next/image"
 import { useCreateBadgeMutation } from "@/lib/services/creator-dashboard/badge/createBadgeApi"
-import { useUploadMediaMutation } from "@/lib/services/creator-dashboard/badge/uploadMediaApi"
+import { getSession } from "next-auth/react"
 
 // Define proper interfaces
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -45,7 +47,7 @@ interface FormData {
 }
 
 interface NotificationState {
-  type: 'success' | 'error'
+  type: "success" | "error"
   message: string
 }
 
@@ -90,11 +92,13 @@ const Button = ({
   disabled = false,
   ...props
 }: ButtonProps) => {
-  const baseClasses = "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background transform "
+  const baseClasses =
+    "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background transform "
 
   const variants = {
     default: "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl ",
-    outline: "border-2 border-input hover:border-primary hover:bg-primary/10 backdrop-blur-sm hover:text-primary text-foreground",
+    outline:
+      "border-2 border-input hover:border-primary hover:bg-primary/10 backdrop-blur-sm hover:text-primary text-foreground",
     ghost: "hover:bg-accent hover:text-accent-foreground",
     danger: "bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-lg",
   }
@@ -127,9 +131,7 @@ const Alert = ({ children, variant = "default", className = "" }: AlertProps) =>
   }
 
   return (
-    <div className={`border rounded-xl p-4 text-sm backdrop-blur-sm ${variants[variant]} ${className}`}>
-      {children}
-    </div>
+    <div className={`border rounded-xl p-4 text-sm backdrop-blur-sm ${variants[variant]} ${className}`}>{children}</div>
   )
 }
 
@@ -147,10 +149,7 @@ const SuccessNotification = ({ message, onClose }: NotificationProps) => (
         </svg>
         <span>{message}</span>
       </div>
-      <button
-        onClick={onClose}
-        className="text-chart-3 hover:text-chart-3/80 transition-colors"
-      >
+      <button onClick={onClose} className="text-chart-3 hover:text-chart-3/80 transition-colors">
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
           <path
             fillRule="evenodd"
@@ -171,16 +170,13 @@ const ErrorNotification = ({ message, onClose }: NotificationProps) => (
         <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
           <path
             fillRule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 001.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
             clipRule="evenodd"
           />
         </svg>
         <span>{message}</span>
       </div>
-      <button
-        onClick={onClose}
-        className="text-destructive hover:text-destructive/80 transition-colors"
-      >
+      <button onClick={onClose} className="text-destructive hover:text-destructive/80 transition-colors">
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
           <path
             fillRule="evenodd"
@@ -207,11 +203,8 @@ function CreateBadgeForm() {
   const [imageError, setImageError] = useState(false)
   const [uploadProgress, setUploadProgress] = useState<string>("")
 
-  // Use the mutation hooks
-  const [uploadMedia, { isLoading: isUploadingMedia }] = useUploadMediaMutation()
   const [createBadge, { isLoading: isCreatingBadge }] = useCreateBadgeMutation()
 
-  // Auto-hide notification after 5 seconds
   useEffect(() => {
     if (notification) {
       const timer = setTimeout(() => {
@@ -224,33 +217,28 @@ function CreateBadgeForm() {
   const handleIconUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // Validate file type
       if (!file.type.startsWith("image/")) {
         setNotification({
-          type: 'error',
-          message: 'Please select an image file (JPG, PNG, GIF, SVG)'
+          type: "error",
+          message: "Please select an image file (JPG, PNG, GIF, SVG)",
         })
         return
       }
 
-      // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
         setNotification({
-          type: 'error',
-          message: 'File size should be less than 10MB'
+          type: "error",
+          message: "File size should be less than 10MB",
         })
         return
       }
 
       setIconFile(file)
-      
-      // Clear previous icon_url if switching from URL method
       setFormData({ ...formData, icon_url: "" })
 
-      // Create preview
       const reader = new FileReader()
       reader.onload = (e) => {
-        setIconPreview(e.target?.result as string || "")
+        setIconPreview((e.target?.result as string) || "")
       }
       reader.readAsDataURL(file)
     }
@@ -267,7 +255,6 @@ function CreateBadgeForm() {
     setImageError(false)
     setUploadProgress("")
 
-    // Reset file input
     const fileInput = document.getElementById("iconFile") as HTMLInputElement
     if (fileInput) fileInput.value = ""
   }
@@ -278,43 +265,64 @@ function CreateBadgeForm() {
     try {
       let iconUrl = formData.icon_url
 
-      // If upload method is selected and there's a file, upload it first
       if (uploadMethod === "upload" && iconFile) {
         setUploadProgress("Uploading image...")
-        
+
         try {
-          const uploadResult = await uploadMedia(iconFile).unwrap()
-          iconUrl = uploadResult.uri
-          console.log("Image uploaded successfully:", uploadResult)
+          const session = await getSession()
+          const token = session?.accessToken
+
+          const uploadFormData = new FormData()
+          uploadFormData.append("file", iconFile)
+
+          const headers: HeadersInit = {}
+          if (token) {
+            headers.Authorization = `Bearer ${token}`
+          }
+
+          const response = await fetch("https://code-compass.devith.it.com/api/v1/medias/upload", {
+            method: "POST",
+            headers,
+            body: uploadFormData,
+          })
+
+          if (!response.ok) {
+            throw new Error("Upload failed")
+          }
+
+          const result = await response.json()
+          if (!result.uri) {
+            throw new Error("Upload response missing uri")
+          }
+
+          iconUrl = result.uri
+          console.log("Image uploaded successfully:", result)
         } catch (uploadError) {
           console.error("Failed to upload image:", uploadError)
-          const error = uploadError as ApiError
-          throw new Error(error?.data?.message || error?.message || "Failed to upload image")
+          throw new Error(uploadError instanceof Error ? uploadError.message : "Failed to upload image")
         }
       }
 
-      // Validate we have an icon URL
       if (!iconUrl) {
         setNotification({
-          type: 'error',
-          message: 'Please provide an icon (either upload a file or enter a URL)'
+          type: "error",
+          message: "Please provide an icon (either upload a file or enter a URL)",
         })
         return
       }
 
-      // Validate form fields
       if (!formData.name.trim()) {
         setNotification({
-          type: 'error',
-          message: 'Please enter a badge name'
+          type: "error",
+          message: "Please enter a badge name",
         })
         return
       }
 
       if (!formData.description.trim()) {
         setNotification({
-          type: 'error',
-          message: 'Please enter a badge description'
+          type: "error",
+          message: "Please enter a badge description",
         })
         return
       }
@@ -322,7 +330,6 @@ function CreateBadgeForm() {
       setUploadProgress("Creating badge...")
       console.log("Creating badge with icon_url:", iconUrl)
 
-      // Call the API to create badge
       const result = await createBadge({
         name: formData.name.trim(),
         description: formData.description.trim(),
@@ -331,24 +338,21 @@ function CreateBadgeForm() {
 
       console.log("Badge created successfully:", result)
 
-      // Show success notification
       setNotification({
-        type: 'success',
-        message: `Badge "${result.name}" created successfully! Status: ${result.status}`
+        type: "success",
+        message: `Badge "${result.name}" created successfully! Status: ${result.status}`,
       })
 
-      // Reset form on success
       resetForm()
       setUploadProgress("")
     } catch (err) {
       console.error("Failed to create badge:", err)
-      
+
       const error = err as ApiError
-      // Show error notification
       const errorMessage = error?.data?.message || error?.message || "Failed to create badge. Please try again."
       setNotification({
-        type: 'error',
-        message: errorMessage
+        type: "error",
+        message: errorMessage,
       })
       setUploadProgress("")
     }
@@ -358,7 +362,6 @@ function CreateBadgeForm() {
     setUploadMethod(method)
     setImageError(false)
     setUploadProgress("")
-    // Clear the other method's data
     if (method === "upload") {
       setFormData({ ...formData, icon_url: "" })
     } else {
@@ -377,7 +380,7 @@ function CreateBadgeForm() {
     setImageError(false)
   }
 
-  const isSubmitting = isCreatingBadge || isUploadingMedia
+  const isSubmitting = isCreatingBadge
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -386,25 +389,17 @@ function CreateBadgeForm() {
         <p className="text-muted-foreground text-lg">Design and create your custom achievement badge</p>
       </div>
 
-      {/* Notifications */}
-      {notification?.type === 'success' && (
-        <SuccessNotification
-          message={notification.message}
-          onClose={() => setNotification(null)}
-        />
+      {notification?.type === "success" && (
+        <SuccessNotification message={notification.message} onClose={() => setNotification(null)} />
       )}
 
-      {notification?.type === 'error' && (
-        <ErrorNotification
-          message={notification.message}
-          onClose={() => setNotification(null)}
-        />
+      {notification?.type === "error" && (
+        <ErrorNotification message={notification.message} onClose={() => setNotification(null)} />
       )}
 
       <div className="glass rounded-2xl shadow-2xl p-8 space-y-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-6">
-            {/* Badge Name */}
             <div className="space-y-3">
               <Label htmlFor="badgeName">Badge Name *</Label>
               <Input
@@ -418,7 +413,6 @@ function CreateBadgeForm() {
               />
             </div>
 
-            {/* Description */}
             <div className="space-y-3">
               <Label htmlFor="badgeDescription">Description *</Label>
               <Textarea
@@ -436,7 +430,6 @@ function CreateBadgeForm() {
           </div>
 
           <div className="space-y-6">
-            {/* Icon Upload Method Toggle */}
             <div className="space-y-4">
               <Label htmlFor="uploadMethod">Icon Method *</Label>
               <div className="flex space-x-4">
@@ -465,7 +458,6 @@ function CreateBadgeForm() {
               </div>
             </div>
 
-            {/* Icon Upload/URL Section */}
             {uploadMethod === "upload" ? (
               <div className="space-y-4">
                 <Label htmlFor="iconFile">Upload Icon *</Label>
@@ -480,11 +472,13 @@ function CreateBadgeForm() {
                 <p className="text-xs text-muted-foreground">Accepted formats: JPG, PNG, GIF, SVG (Max 10MB)</p>
                 {iconPreview && (
                   <div className="bg-muted/30 rounded-xl p-4 border border-border">
-                    <Label htmlFor="preview" className="block mb-3 font-semibold">Preview</Label>
+                    <Label htmlFor="preview" className="block mb-3 font-semibold">
+                      Preview
+                    </Label>
                     <div className="flex items-center space-x-4">
                       <div className="relative w-20 h-20">
                         <Image
-                          src={iconPreview}
+                          src={iconPreview || "/placeholder.svg"}
                           alt="Badge icon preview"
                           width={80}
                           height={80}
@@ -513,11 +507,13 @@ function CreateBadgeForm() {
                 />
                 {formData.icon_url && (
                   <div className="bg-muted/30 rounded-xl p-4 border border-border">
-                    <Label htmlFor="urlPreview" className="block mb-3 font-semibold">Preview</Label>
+                    <Label htmlFor="urlPreview" className="block mb-3 font-semibold">
+                      Preview
+                    </Label>
                     <div className="relative w-20 h-20">
                       {!imageError ? (
                         <Image
-                          src={formData.icon_url}
+                          src={formData.icon_url || "/placeholder.svg"}
                           alt="Badge icon preview"
                           width={80}
                           height={80}
@@ -538,14 +534,8 @@ function CreateBadgeForm() {
           </div>
         </div>
 
-        {/* Submit Button */}
         <div className="pt-6 border-t border-border">
-          <Button 
-            onClick={handleSubmit} 
-            className="w-full text-lg py-4" 
-            size="lg" 
-            disabled={isSubmitting}
-          >
+          <Button onClick={handleSubmit} className="w-full text-lg py-4" size="lg" disabled={isSubmitting}>
             {isSubmitting ? (
               <div className="flex items-center space-x-2">
                 <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>

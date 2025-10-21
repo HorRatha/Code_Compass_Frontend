@@ -7,14 +7,12 @@ import { useRouter } from "next/navigation"
 import { ArrowLeft, Camera, X, Loader2, Check, AlertCircle, Upload } from "lucide-react"
 import Image from "next/image"
 import { UpdateUserProfileRequest, useGetUserProfileQuery, useUpdateUserProfileMutation } from "@/lib/services/leaderboard/userProfileApi"
-import { useUploadMediaFileMutation } from "@/lib/services/media/mediaApi"
 import { getSession } from "next-auth/react"
 
 export default function EditProfilePage() {
   const router = useRouter()
   const { data: userData, isLoading, error } = useGetUserProfileQuery()
   const [updateProfile] = useUpdateUserProfileMutation()
-  const [uploadMedia, { isLoading: isUploading }] = useUploadMediaFileMutation()
 
   const [isDarkMode, setIsDarkMode] = useState(true)
   const [formData, setFormData] = useState({
