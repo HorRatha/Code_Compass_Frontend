@@ -526,6 +526,7 @@ export default function ProblemsTable({
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           {showAll ? 'All Problems' : showVerified ? 'All Problems' : 'Pending Problems'} ({problems?.length || 0})
+          {/* {showAll}  ({problems?.length || 0}) */}
         </h3>
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600 dark:text-gray-400">

@@ -416,7 +416,7 @@ export default function CreatorDashboard() {
                     <span className="animate-pulse">...</span>
                   ) : (
                     <span className="bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
-                      {problems.length}
+                      {problems?.length - 1}
                     </span>
                   )}
                 </p>

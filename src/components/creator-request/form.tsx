@@ -7,6 +7,7 @@ import { ElectricBorder } from './features/ElectricBorder';
 import { PopoverForm } from './features/PopoverForm';
 import { PopoverFormButton } from './features/PopoverFormButton';
 import { PopoverFormSuccess } from './features/PopoverFormSuccess';
+import { usePostCreatorRequestMutation } from '@/lib/services/creator-request/creatorApi';
 
 export default function CreatorRequestForm() {
   const [open, setOpen] = useState(false);
@@ -15,6 +16,7 @@ export default function CreatorRequestForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isDark, setIsDark] = useState(false);
+  const [postCreatorRequest] = usePostCreatorRequestMutation();
 
   useEffect(() => {
     const checkDarkMode = () => {
@@ -42,14 +44,15 @@ export default function CreatorRequestForm() {
     setError(null);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      // ✅ Use the mutation function here
+      await postCreatorRequest({ description }).unwrap();
+
       setShowSuccess(true);
       setDescription('');
       setTimeout(() => {
         setShowSuccess(false);
         setOpen(false);
-      }, 2500);
+      }, 2000);
     } catch (err) {
       setError('Failed to submit request. Please try again.');
       console.error('Failed to submit creator request:', err);
