@@ -99,7 +99,7 @@ export default function EditProfilePage() {
         console.error("Auto-save error:", error)
         setAutoSaveStatus("idle")
       }
-    }, 1000) // Save after 1 second of no typing
+    }, 1000)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -169,7 +169,6 @@ export default function EditProfilePage() {
       canvas.width = size
       canvas.height = size
 
-      // Make the canvas circular
       ctx.beginPath()
       ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2)
       ctx.closePath()
@@ -182,7 +181,6 @@ export default function EditProfilePage() {
       const sourceX = (image.naturalWidth / 2) - (sourceSize / 2) - (cropData.x / scale)
       const sourceY = (image.naturalHeight / 2) - (sourceSize / 2) - (cropData.y / scale)
 
-      // Center the image in the circular canvas
       const offset = (size - size) / 2
       ctx.drawImage(
         image,
@@ -198,7 +196,7 @@ export default function EditProfilePage() {
 
       canvas.toBlob((blob) => {
         if (blob) resolve(blob)
-      }, 'image/png', 1) // Use PNG to preserve transparency
+      }, 'image/png', 1)
     })
   }
 
@@ -359,22 +357,31 @@ export default function EditProfilePage() {
                          background: `linear-gradient(135deg, ${theme.accent}, transparent)`,
                          padding: '3px'
                        }}>
-                    <div className={`w-full h-full rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-900' : 'bg-white'}`}>
+                    <div className={`w-full h-full rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-900' : 'bg-white'} flex items-center justify-center`}>
                       {imagePreview ? (
-                        <div className="relative w-full h-full">
-                          <Image
-                            src={imagePreview || "/placeholder.svg"}
-                            alt="Profile"
-                            fill
-                            className="object-cover"
-                            style={{ borderRadius: '50%' }}
-                          />
-                        </div>
-                      ) : (
-                        <div className={`w-full h-full flex items-center justify-center ${isDarkMode ? 'bg-slate-800' : 'bg-gray-100'}`}>
-                          <Camera size={40} className={theme.textSecondary} />
-                        </div>
-                      )}
+  <img
+    src={imagePreview}
+    alt="Profile"
+    className="max-w-full max-h-full rounded-full"
+    style={{
+      width: '100%',
+      height: '100%',
+      objectFit: 'contain',   // show the full image
+      objectPosition: 'center',
+      borderRadius: 'inherit',
+      display: 'block',
+    }}
+  />
+) : (
+  <div
+    className={`w-full h-full flex items-center justify-center rounded-full overflow-hidden ${
+      isDarkMode ? 'bg-slate-800' : 'bg-gray-100'
+    }`}
+  >
+    <Camera size={40} className={theme.textSecondary} />
+  </div>
+)}
+
                     </div>
                   </div>
 
@@ -554,16 +561,18 @@ export default function EditProfilePage() {
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
             >
-              <Image
+              <img
                 ref={cropImageRef}
                 src={imagePreview}
                 alt="Crop preview"
-                className="absolute"
+                className="absolute top-1/2 left-1/2"
                 style={{
-                  transform: `translate(${cropData.x}px, ${cropData.y}px) scale(${cropData.scale})`,
+                  transform: `translate(calc(-50% + ${cropData.x}px), calc(-50% + ${cropData.y}px)) scale(${cropData.scale})`,
                   transformOrigin: 'center',
-                  width: '100%',
-                  height: '100%',
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  width: 'auto',
+                  height: 'auto',
                   objectFit: 'contain',
                   userSelect: 'none',
                   pointerEvents: 'none'

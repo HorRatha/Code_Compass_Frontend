@@ -235,6 +235,7 @@ export const MobileUserProfile: React.FC<MobileUserProfileProps> = ({
 
   const baseProfileItems = [
     { name: "Profile", href: "/profile", icon: User, color: "text-blue-500" },
+    { name: "Creator Dashboard", href: "/creator-dashboard", icon: LayoutDashboard, color: "text-purple-500" }
   ];
 
   const creatorItems = isCreator 
